@@ -2,15 +2,15 @@ import React, {Fragment, useEffect, useState} from 'react';
 import {useNavigate, useSearchParams} from 'react-router-dom';
 import {useForm} from 'react-hook-form';
 import {Dialog, Transition } from '@headlessui/react';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../../store';
+import {useDispatch} from 'react-redux';
+import {AppDispatch} from '../../../store';
 import {FuncButton} from '../FuncButton';
 import {Api} from '../../../openapi/api';
 import {LoginInput} from '../../../openapi/generated';
 import {PATTERNS} from '../../constants';
-import {setLoginReducer, setLogoutReducer} from '../../../store/auth/auth.slice';
 import {VisibilityOffIcon, VisibilityOnIcon} from '../Icons';
 import {getProfile} from '../../../store/user/user.actions';
+import {useAuthStore} from '../../../store/authStore';
 
 export const SignInModal = () => {
     const { VALID_PASSWORD, INPUT_PASSWORD, EMAIL } = PATTERNS;
@@ -22,7 +22,7 @@ export const SignInModal = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
-    const authState = useSelector((state: RootState) => state.auth);
+    const authStore = useAuthStore();
 
     const form = useForm<LoginInput>({ mode: 'onChange' });
 
@@ -42,12 +42,12 @@ export const SignInModal = () => {
             .then((res) => {
                 (async () => {
                     if (!res.data.success) {
-                        dispatch(await setLogoutReducer());
+                        authStore.setLogout();
                         setErrorMessage(res.data.error);
                         return;
                     }
                     closeModal();
-                    dispatch(setLoginReducer(res.data.accessToken));
+                    authStore.setLogin(res.data.accessToken);
                     dispatch(await getProfile());
                     navigate('/memo');
                 })()
@@ -149,7 +149,7 @@ export const SignInModal = () => {
                                             options={{
                                                 text: '로그인',
                                                 disabled: !form.formState.isValid,
-                                                loading: authState.loading,
+                                                loading: authStore.loading,
                                             }}
                                             type='submit'
                                             className='w-full py-[6px] bg-primary text-white text-center cursor-pointer text-[20px] rounded-[16px]'

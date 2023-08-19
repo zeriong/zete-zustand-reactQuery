@@ -3,7 +3,6 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../../store';
 import {Controller, useForm} from 'react-hook-form';
-import {showAlert} from '../../../store/alert/alert.actions';
 import {CreateMemoInput, Memo} from '../../../openapi/generated';
 import {removeSpace} from '../../../libs/common.lib';
 import {useSearchParams} from 'react-router-dom';
@@ -16,6 +15,7 @@ import {saveMemoReducer} from '../../../store/memo/memo.slice';
 import {getCategoriesAction} from '../../../store/memo/memo.actions';
 import {AutoResizeTextarea} from '../../../common/components/AutoResizeTextarea';
 import {AutoResizeInput} from '../../../common/components/AutoResizeInput';
+import {useToastAlertStore} from '../../../common/components/ToastAlert';
 
 export const AddMemo = () => {
     const panelRef = useRef<HTMLDivElement>(null);
@@ -28,6 +28,7 @@ export const AddMemo = () => {
     const [formMode, setFormMode] = useState<'idle' | 'edit' | 'askAI'>('idle');
 
     const dispatch = useDispatch<AppDispatch>();
+    const toastAlertStore = useToastAlertStore.getState();
     const memoState = useSelector((state: RootState) => state.memo);
 
     const form = useForm<CreateMemoInput>({ mode: 'onSubmit' });
@@ -54,9 +55,9 @@ export const AddMemo = () => {
                 try {
                     const res = await Api.memo.createMemo(data);
                     if (res.data.success) savedMemoRef.current = res.data.savedMemo;
-                    else showAlert(res.data.error);
+                    else toastAlertStore.setAlert(res.data.error);
                 } catch (e) {
-                    showAlert('메모 저장에 실패하였습니다.');
+                    toastAlertStore.setAlert('메모 저장에 실패하였습니다.');
                 }
             }
         } else {
@@ -65,16 +66,16 @@ export const AddMemo = () => {
                 try {
                     const res = await Api.memo.updateMemo({ ...data, id: savedMemoRef.current.id });
                     if (res.data.success) savedMemoRef.current = res.data.savedMemo;
-                    else showAlert(res.data.error);
+                    else toastAlertStore.setAlert(res.data.error);
                 } catch (e) {
-                    showAlert('메모 저장에 실패하였습니다.');
+                    toastAlertStore.setAlert('메모 저장에 실패하였습니다.');
                 }
             } else {
                 // 저장된 아이디가 존재하지만 내용이 비워진 경우 삭제
                 try {
                     const res = await Api.memo.deleteMemo({id: savedMemoRef.current.id});
                     if (res.data.success) savedMemoRef.current = null;
-                    else showAlert('삭제된 메모입니다.');
+                    else toastAlertStore.setAlert('삭제된 메모입니다.');
                 } catch (e) {
                     console.log('메모 삭제 실패, 실패사유: ',e);
                 }
@@ -105,7 +106,7 @@ export const AddMemo = () => {
             try {
                 const res = await Api.memo.deleteMemo({id: savedMemoRef.current.id});
                 if (res.data.success) savedMemoRef.current = null;
-                else showAlert('삭제된 메모입니다.');
+                else toastAlertStore.setAlert('삭제된 메모입니다.');
             } catch (e) {
                 console.log('메모 삭제 실패, 실패사유: ',e);
             }

@@ -1,10 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {UseFormReturn} from 'react-hook-form';
-import {showAlert} from '../../../store/alert/alert.actions';
 import {Api} from '../../../openapi/api';
 import CustomScroller from '../../../common/components/customScroller';
 import axios from 'axios';
 import {AutoResizeTextarea} from '../../../common/components/AutoResizeTextarea';
+import {useToastAlertStore} from '../../../common/components/ToastAlert';
 
 export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) => {
     const requestRef = useRef(null);
@@ -15,12 +15,14 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
     const [message, setMessage] = useState('');
     const [inputValue, setInputValue] = useState('');
 
+    const toastAlertStore = useToastAlertStore.getState();
+
     const askAiSubmit = (event) => {
         event.preventDefault();
 
-        if (usableCount <= 0) return showAlert('질문가능 횟수가 초과하였습니다, 매일 자정이 지나면 충전됩니다.');
+        if (usableCount <= 0) return toastAlertStore.setAlert('질문가능 횟수가 초과하였습니다, 매일 자정이 지나면 충전됩니다.');
 
-        if (!inputValue || inputValue.length < 2) return showAlert('질문을 입력해 주시기 바랍니다.');
+        if (!inputValue || inputValue.length < 2) return toastAlertStore.setAlert('질문을 입력해 주시기 바랍니다.');
 
         requestRef.current = axios.CancelToken.source();
         setIsLoading(true);
@@ -41,12 +43,12 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
                         setMessage(res.data.gptResponse);
                     }
                 } else if (res.data?.error) {
-                    showAlert(res.data.error);
+                    toastAlertStore.setAlert(res.data.error);
                     setIsLoading(false);
                 }
             })
             .catch(() => {
-                showAlert('GPT 답변 요청이 취소되었습니다.');
+                toastAlertStore.setAlert('GPT 답변 요청이 취소되었습니다.');
                 setIsLoading(false);
             });
         setInputValue('');
@@ -63,7 +65,7 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
             if (requestRef.current) requestRef.current.cancel();
 
             // 응답받고 추가대기시간때도 알림을 띄움 (유저입장에선 똑같이 기다리는 상황이기 때문)
-            if (isWaiting) showAlert('GPT 답변 요청이 취소되었습니다.');
+            if (isWaiting) toastAlertStore.setAlert('GPT 답변 요청이 취소되었습니다.');
             setUsableCount(0);
             setIsLoading(false);
             setIsWaiting(false);

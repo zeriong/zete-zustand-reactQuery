@@ -3,12 +3,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../store';
 import {useForm} from 'react-hook-form';
 import {FuncButton} from '../../../common/components/FuncButton';
-import {showAlert} from '../../../store/alert/alert.actions';
 import {useNavigate} from 'react-router-dom';
 import {Api} from '../../../openapi/api';
 import {setUserReducer} from '../../../store/user/user.slice';
 import {PATTERNS} from '../../../common/constants';
 import {UpdateAccountInput} from '../../../openapi/generated';
+import {useToastAlertStore} from '../../../common/components/ToastAlert';
 
 export const EditProfilePage = () => {
     const { VALID_PASSWORD, INPUT_PASSWORD, EMAIL, INPUT_PHONE } = PATTERNS;
@@ -19,6 +19,7 @@ export const EditProfilePage = () => {
     const [isRender, setIsRender] = useState(false);
 
     const dispatch = useDispatch();
+    const toastAlertStore = useToastAlertStore.getState();
     const navigate = useNavigate();
     const userState = useSelector((state: RootState) => (state.user));
 
@@ -51,11 +52,11 @@ export const EditProfilePage = () => {
             .then((res) => {
                 if (res.data.success) {
                     dispatch(setUserReducer({...userState, email, name, mobile }));
-                    showAlert('✔ 회원정보 수정이 완료되었습니다!');
+                    toastAlertStore.setAlert('✔ 회원정보 수정이 완료되었습니다!');
                     return navigate(-1);
                 }
                 setOccurError(res.data.error);
-                showAlert('❌ 회원정보 수정에 실패했습니다.');
+                toastAlertStore.setAlert('❌ 회원정보 수정에 실패했습니다.');
             })
             .catch(e => console.log(e));
     });

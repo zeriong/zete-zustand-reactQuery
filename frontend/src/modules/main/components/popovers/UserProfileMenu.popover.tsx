@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../../../store';
 import {LogoutIcon, ProfileIcon, UserIcon} from '../../../../common/components/Icons';
-import {logoutAction} from '../../../../store/auth/auth.actions';
+import {logout} from '../../../../libs/memo.lib';
 
 interface IMenuList {
     name: string;
@@ -27,7 +27,7 @@ export const UserProfileMenuPopover = () => {
             name: '로그아웃',
             icon: <LogoutIcon/>,
             path: '/',
-            function: async () => await logoutAction(),
+            function: () => logout(),
         },
     ];
 

@@ -3,11 +3,12 @@ import {Link, useSearchParams} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../../store';
 import memoImg from '../../../assets/scroll-g6570d2351_1920.png';
+import {useAuthStore} from '../../../store/authStore';
 
 export const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const authState = useSelector((state: RootState) => state.auth);
+    const authStore = useAuthStore();
     const userState = useSelector((state: RootState) => state.user);
 
     const openSignInModal = () => {
@@ -33,7 +34,7 @@ export const Home = () => {
                             </span>
                         </span>
                     </h1>
-                    {authState.isLoggedIn ? (
+                    {authStore.isLoggedIn ? (
                         <div className='flex flex-col mt-[40px]'>
                             <h1 className='flex text-[26px] font-bold justify-center'>
                                 { userState.data?.name && `어서오세요! ${ userState.data?.name }님` }
@@ -53,7 +54,7 @@ export const Home = () => {
                             가입하고 무료로 시작하세요.
                         </h1>
                     )}
-                    {!authState.isLoggedIn &&
+                    {!authStore.isLoggedIn &&
                         <div className='flex flex-row text-[16px] md:text-[22px] mt-[30px] md:mt-[60px]'>
                             <button
                                 type='button'

@@ -2,11 +2,12 @@ import React, {useEffect} from 'react';
 import {Router} from './router/Router';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from './store';
-import {Alert} from './common/components/Alert';
+import {ToastAlert} from './common/components/ToastAlert';
 import {getProfile} from './store/user/user.actions';
+import {useAuthStore} from './store/authStore';
 
 function App() {
-    const authState = useSelector((state: RootState) => (state.auth));
+    const authStore = useAuthStore();
     const userState = useSelector((state: RootState) => (state.user));
     const dispatch = useDispatch<AppDispatch>();
 
@@ -17,8 +18,8 @@ function App() {
 
     return (
         <>
-            { (!authState.loading || !userState.loading) && <Router/> }
-            <Alert/>
+            { (!authStore.loading || !userState.loading) && <Router/> }
+            <ToastAlert/>
         </>
     )
 }

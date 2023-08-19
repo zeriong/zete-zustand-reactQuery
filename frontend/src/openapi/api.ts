@@ -1,8 +1,7 @@
 import axios, {AxiosRequestConfig} from 'axios';
 import {exportApis} from './generated';
 import {API_URL} from '../common/constants';
-import {store} from '../store';
-import {setLoginReducer, setLogoutReducer} from '../store/auth/auth.slice';
+import {useAuthStore} from '../store/authStore';
 
 const REFRESH_TOKEN_PATH = '/auth/refresh';
 
@@ -13,13 +12,13 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-    config.headers['Authorization'] = `Bearer ${ store.getState().auth.accessToken }`;
+    config.headers['Authorization'] = `Bearer ${ useAuthStore.getState().accessToken }`;
     return config;
 });
 
+// 요청에 실패하여 에러를 발생시킨 경우
 axiosInstance.interceptors.response.use((value: any) => value, async (error) => {
     const originalConfig = error.config;
-
     // accessToken 발급요청이 에러를 내면 무한루프에 빠짐
     if (error.config.url === REFRESH_TOKEN_PATH) return Promise.reject(error);
 
@@ -28,23 +27,24 @@ axiosInstance.interceptors.response.use((value: any) => value, async (error) => 
     // 서버에서 쿠키에 저장하는 jwt가 적용된 refreshToken이 존재하면 accessToken을 발급한다.
     // 발급 이후에 아직 로그인상태가 아니기 때문에 retry하여 accessToken을 통해 로그인을 유지할 수 있다.
     if (error.response?.status === 401 && !originalConfig.retry) {
+        const authStore = useAuthStore.getState();
         try {
             const result = await Api.auth.refreshToken();
             if (result.data?.success && result.data?.accessToken) {
                 const token = result.data.accessToken;
-                store.dispatch(setLoginReducer(token));
+                authStore.setLogin(token);
 
-                originalConfig.headers['Authorization'] = `Bearer ${ store.getState().auth.accessToken }`;
+                originalConfig.headers['Authorization'] = `Bearer ${ authStore.accessToken }`;
                 originalConfig.retry = true; // 아래 내용 처리 이후 해당 요청을 재실행
 
                 return axiosInstance(originalConfig);
             } else {
-                store.dispatch(setLogoutReducer());
+                authStore.setLogout();
                 return Promise.reject(error);
             }
         } catch (e) {
             // 토큰발급 실패, 로그인정보 초기화 및 로그인창 이동
-            store.dispatch(setLogoutReducer());
+            authStore.setLogout();
             return Promise.reject(e);
         }
     }

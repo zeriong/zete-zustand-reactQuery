@@ -7,13 +7,13 @@ import {useSearchParams} from 'react-router-dom';
 import {Dialog, Transition} from '@headlessui/react';
 import {CategoryIcon, CloseIcon, FillStarIcon, PlusIcon, StarIcon} from '../../../../common/components/Icons';
 import {removeSpace} from '../../../../libs/common.lib';
-import {showAlert} from '../../../../store/alert/alert.actions';
 import {Api} from '../../../../openapi/api';
 import {deleteMemoTag, addMemoTagSubmit, focusToContent, loadMemos} from '../../../../libs/memo.lib';
 import {HorizontalScroll} from '../../../../common/components/HorizontalScroll';
 import {updateMemoReducer} from '../../../../store/memo/memo.slice';
 import {getCategoriesAction} from '../../../../store/memo/memo.actions';
 import {AutoResizeInput} from '../../../../common/components/AutoResizeInput';
+import {useToastAlertStore} from '../../../../common/components/ToastAlert';
 
 export const EditMemoModal = () => {
     const savedMemoRef = useRef<Memo | null>(null);
@@ -27,6 +27,7 @@ export const EditMemoModal = () => {
     const [isShow, setIsShow] = useState(false);
 
     const dispatch = useDispatch<AppDispatch>();
+    const toastAlertStore = useToastAlertStore.getState();
     const memoState = useSelector((state:RootState) => state.memo);
 
     const form = useForm<UpdateMemoInput>({ mode: 'onSubmit' });
@@ -46,7 +47,7 @@ export const EditMemoModal = () => {
     },[searchParams]);
 
     // 수정할 메모를 요청해서 받은 데이터를 기반으로 세팅
-    const setModal = () => {
+    const setModal = () => { 
         (async () =>{
             // 메모를 받아오기 전까지 로딩상태를 유지하기 위함
             isLoadingMemoRef.current = true;
@@ -66,7 +67,7 @@ export const EditMemoModal = () => {
                     form.setValue('isImportant', memo.isImportant);
                 }
             } else {
-                showAlert('존재하지 않는 메모입니다.');
+                toastAlertStore.setAlert('존재하지 않는 메모입니다.');
                 searchParams.delete('view');
                 setSearchParams(searchParams);
                 loadMemos(true);
@@ -92,7 +93,7 @@ export const EditMemoModal = () => {
             // auto 인자를 전달받아 auto(자동저장인 경우)가 있는 경우라면 팝업알람을 띄우지 않지만
             // 직접 배경을 눌러 update를 요청한 경우라면 팝업 알람을 띄워준다.
             if (auto) return;
-            return showAlert('입력내용이 존재하지 않아 마지막 내용을 저장합니다.');
+            return toastAlertStore.setAlert('입력내용이 존재하지 않아 마지막 내용을 저장합니다.');
         }
         if (data.title === targetMemo.title && data.content === targetMemo.content && data.cateId === Number(targetMemo.cateId) &&
             targetMemo.tags?.length === diffTagLength && targetMemo.isImportant === data.isImportant) return;
@@ -101,9 +102,9 @@ export const EditMemoModal = () => {
         try {
             const res = await Api.memo.updateMemo({ ...data, id: savedMemoRef.current.id });
             if (res.data.success) savedMemoRef.current = res.data.savedMemo;
-            else showAlert(res.data.error);
+            else toastAlertStore.setAlert(res.data.error);
         } catch (e) {
-            showAlert('메모 수정에 실패하였습니다.');
+            toastAlertStore.setAlert('메모 수정에 실패하였습니다.');
             loadMemos(true);
         }
 

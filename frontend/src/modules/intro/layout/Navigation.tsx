@@ -2,15 +2,16 @@ import {Link, useSearchParams} from 'react-router-dom';
 import React from 'react';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../../store';
-import {logoutAction} from '../../../store/auth/auth.actions';
 import {HamburgerMenuIcon, LogoutIcon, ModifyIcon} from '../../../common/components/Icons';
 import {useLayoutStore} from '../../../store/layoutStore';
+import {useAuthStore} from '../../../store/authStore';
+import {logout} from '../../../libs/memo.lib';
 
 export const HomeNav = ()=> {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const layoutStore = useLayoutStore();
-    const authState = useSelector((state: RootState) => state.auth);
+    const authStore = useAuthStore();
     const userState = useSelector((state: RootState) => state.user);
 
     const menuList: { name: string, to: string }[] = [
@@ -33,11 +34,6 @@ export const HomeNav = ()=> {
         setSearchParams(searchParams);
     }
 
-    const logout = async () => {
-        await logoutAction();
-        layoutStore.setShowSideNav(false);
-    }
-
     return !userState.loading &&
         <nav className='flex justify-between h-[48px] md:h-auto pl-[12px] pr-[12px] items-center md:px-[40px] py-[12px] border-b border-gray-300 whitespace-nowrap fixed bg-white w-full z-30'>
             <div
@@ -56,9 +52,9 @@ export const HomeNav = ()=> {
             >
                 <div className='block md:hidden font-bold border-b border-b-gray-300 pb-[20px] pl-[8px]'>
                     <div className='text-xl mb-[8px] text-gray-700'>
-                        { authState.isLoggedIn ? `${ userState.data?.name }님` : '로그인해주세요.' }
+                        { authStore.isLoggedIn ? `${ userState.data?.name }님` : '로그인해주세요.' }
                     </div>
-                    {authState.isLoggedIn ? (
+                    {authStore.isLoggedIn ? (
                         <>
                             <div className='group flex items-center'>
                                 <ModifyIcon width={22} height={22} className='ease-in-out duration-200 rotate-0 group-hover:rotate-[360deg]'/>
@@ -71,7 +67,10 @@ export const HomeNav = ()=> {
                                 <button
                                     type='button'
                                     className='flex w-full ease-in-out duration-150 pl-[8px] py-[4px] hover:text-red-500'
-                                    onClick={ logout }
+                                    onClick={() => {
+                                        logout();
+                                        layoutStore.setShowSideNav(false);
+                                    }}
                                 >
                                     로그아웃
                                 </button>
@@ -112,7 +111,7 @@ export const HomeNav = ()=> {
             </section>
 
             {/** pc 환경 컴포넌트 */}
-            {authState.isLoggedIn ? (
+            {authStore.isLoggedIn ? (
                 <section className='hidden md:flex flex-row items-center'>
                     <div className='text-[20px] font-bold text-gray-600 mr-[16px]'>
                         { userState.data?.name && `${ userState.data?.name }님` }
@@ -125,7 +124,10 @@ export const HomeNav = ()=> {
                     </Link>
                     <button
                         type='button'
-                        onClick={ logout }
+                        onClick={() => {
+                            logout();
+                            layoutStore.setShowSideNav(false);
+                        }}
                         className={ mobileHeaderButtonStyle + 'border border-gray-500' }
                     >
                         로그아웃

@@ -4,10 +4,10 @@ import {CatePlusIcon, DeleteIcon, FillCategoryIcon, ModifyIcon} from '../../../.
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../../../store';
 import CustomScroller from '../../../../common/components/customScroller';
-import {showAlert} from '../../../../store/alert/alert.actions';
 import {ConfirmButton} from '../../../../common/components/ConfirmButton';
 import {createCategoryAction, deleteCategoryAction, getCategoriesAction, updateCategoryAction} from '../../../../store/memo/memo.actions';
 import {CoreOutput} from '../../../../openapi/generated';
+import {useToastAlertStore} from '../../../../common/components/ToastAlert';
 
 export const EditCategoryModal = (props: { buttonText: string }) => {
     const [isShow, setIsShow] = useState(false);
@@ -15,6 +15,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
     const [updateInputValues, setUpdateInputValues] = useState<{ [key: number]: string }>({});
 
     const dispatch = useDispatch<AppDispatch>();
+    const toastAlertStore = useToastAlertStore.getState();
     const memoState = useSelector((state: RootState) => state.memo);
 
     const openModal = () => setIsShow(true);
@@ -44,7 +45,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                 // 업데이트 실패시 원래 값으로
                 if (!data.success) {
                     input.value = prevVal;
-                    showAlert(data.error);
+                    toastAlertStore.setAlert(data.error);
                 }
             });
         }

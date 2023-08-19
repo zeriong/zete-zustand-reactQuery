@@ -1,14 +1,13 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {useSearchParams} from 'react-router-dom';
 import {useForm} from 'react-hook-form';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../store';
 import {Dialog, Transition } from '@headlessui/react';
 import {FuncButton} from '../FuncButton';
 import {Api} from '../../../openapi/api';
 import {PATTERNS} from '../../constants';
 import {VisibilityOffIcon, VisibilityOnIcon} from '../Icons';
 import {CreateAccountInput} from '../../../openapi/generated';
+import {useAuthStore} from '../../../store/authStore';
 
 export const SignUpModal = (props: { successControl: React.Dispatch<React.SetStateAction<boolean>> }) => {
     const { VALID_PASSWORD, INPUT_PASSWORD, EMAIL, INPUT_PHONE } = PATTERNS;
@@ -19,7 +18,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const authState = useSelector((state: RootState) => state.auth);
+    const authStore = useAuthStore();
 
     const form = useForm<CreateAccountInput & { passwordConfirm?: string }>({ mode: 'onChange' });
 
@@ -210,7 +209,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
                                             options={{
                                                 text: '회원가입',
                                                 disabled: !form.formState.isValid,
-                                                loading: authState.loading,
+                                                loading: authStore.loading,
                                             }}
                                             type='submit'
                                             className='w-full py-[6px] bg-primary text-white text-center cursor-pointer text-[22px] rounded-[16px] mt-[10px]'
