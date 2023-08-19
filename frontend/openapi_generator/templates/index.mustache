@@ -1,0 +1,21 @@
+/* tslint:disable */
+/* eslint-disable */
+{{>licenseInfo}}
+
+export * from "./api";
+export * from "./configuration";
+{{#withSeparateModelsAndApi}}export * from "./{{tsModelPackage}}";{{/withSeparateModelsAndApi}}
+
+import {AxiosInstance} from "axios";
+
+{{#apiInfo}}{{#apis}}
+import { {{classname}}Factory } from "./api/{{classFilename}}";
+{{/apis}}{{/apiInfo}}
+
+export const exportApis = (axios: AxiosInstance) => {
+    return {
+        {{#apiInfo}}{{#apis}}
+            {{classVarName}}: {{classname}}Factory(undefined, "", axios),
+        {{/apis}}{{/apiInfo}}
+    }
+}
