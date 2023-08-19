@@ -73,7 +73,7 @@ export const ToastAlert = () => {
                 <div
                     ref={ alarmRef }
                     className={`bg-black/90 flex items-center justify-center fixed h-[40px] pl-[20px] pr-[26px] py-[30px] z-[200] left-[26px]
-                    rounded-[4px] transition-all duration-300 ease-in-out ${ isShow ? 'bottom-[26px] opacity-100' : 'opacity-0 bottom-0' }`}
+                    rounded transition-all duration-300 ease-in-out ${ isShow ? 'bottom-[26px] opacity-100' : 'opacity-0 bottom-0' }`}
                 >
                     <div className='mr-[6px]'>
                         <AlarmIcon className='fill-white h-[22px]'/>

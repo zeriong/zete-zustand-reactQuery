@@ -172,7 +172,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                                         <button
                                             type='button'
                                             onClick={ closeModal }
-                                            className='text-[15px] font-normal text-dark py-[8px] px-[22px] hover:bg-gray-200/60 rounded-[4px]'
+                                            className='text-[15px] font-normal text-dark py-[8px] px-[22px] hover:bg-gray-200/60 rounded'
                                         >
                                             완료
                                         </button>

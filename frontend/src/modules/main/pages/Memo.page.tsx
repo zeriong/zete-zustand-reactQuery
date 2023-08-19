@@ -131,7 +131,7 @@ export const MemoPage = () => {
                                         <HorizontalScroll>
                                             <ul className='flex w-full h-full relative pt-[8px] pb-[9px] overflow-y-hidden'>
                                                 {memo.tags?.map((tag, idx) => (
-                                                    <li key={ idx } className='flex items-center px-[9px] py-[1px] mr-[4px] rounded-[4px] bg-black bg-opacity-10 cursor-default'>
+                                                    <li key={ idx } className='flex items-center px-[9px] py-[1px] mr-[4px] rounded bg-black bg-opacity-10 cursor-default'>
                                                         <p className='font-light text-[11px] text-dark/90 whitespace-nowrap'>
                                                             { tag.name }
                                                         </p>

@@ -19,7 +19,7 @@ export const Header = () => {
                     <HamburgerMenuIcon height={20}/>
                 </button>
                 {/*브랜드마크*/}
-                <div className='w-[26px] h-[26px] bg-primary rounded-[4px] mr-[10px]'/>
+                <div className='w-[26px] h-[26px] bg-primary rounded mr-[10px]'/>
                 <Link
                     to='/memo'
                     className='flex relative justify-start items-center text-[17px] font-medium transition-all duration-300 h-full'

@@ -35,7 +35,7 @@ export const SearchMemo = () => {
             onSubmit={ searchSubmit }
             onBlur={ searchSubmit }
             className='flex items-center w-[170px] md:w-[240px] px-[10px] py-[4px] text-[14px] md:border md:border-gray-300
-            bg-gray-100 md:bg-white rounded-[4px] ml-[10px] md:m-0'
+            bg-gray-100 md:bg-white rounded ml-[10px] md:m-0'
         >
             <input
                 {...form.register('search', {

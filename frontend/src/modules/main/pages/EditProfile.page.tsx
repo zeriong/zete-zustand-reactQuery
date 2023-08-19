@@ -9,12 +9,13 @@ import {setUserReducer} from '../../../store/user/user.slice';
 import {PATTERNS} from '../../../common/constants';
 import {UpdateAccountInput} from '../../../openapi/generated';
 import {useToastAlertStore} from '../../../common/components/ToastAlert';
+import {VisibilityOffIcon, VisibilityOnIcon} from '../../../common/components/Icons';
 
 export const EditProfilePage = () => {
     const { VALID_PASSWORD, INPUT_PASSWORD, EMAIL, INPUT_PHONE } = PATTERNS;
 
-    const [showPW, setShowPW] = useState(false);
-    const [showConfirmPW, setShowConfirmPW] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [occurError, setOccurError] = useState('');
     const [isRender, setIsRender] = useState(false);
 
@@ -24,7 +25,7 @@ export const EditProfilePage = () => {
     const userState = useSelector((state: RootState) => (state.user));
 
     // 컴포넌트가 마운트 되었을 때 store에 저장된 유저데이터로 form에 셋팅한다.
-    const form = useForm<UpdateAccountInput & { passwordConfirm: string | null }>({
+    const form = useForm<UpdateAccountInput & { confirmPassword: string | null }>({
         mode: 'onChange',
         defaultValues: {
             name: userState.data.name,
@@ -53,12 +54,14 @@ export const EditProfilePage = () => {
                 if (res.data.success) {
                     dispatch(setUserReducer({...userState, email, name, mobile }));
                     toastAlertStore.setAlert('✔ 회원정보 수정이 완료되었습니다!');
-                    return navigate(-1);
+                } else {
+                    setOccurError(res.data.error);
+                    toastAlertStore.setAlert('❌ 회원정보 수정에 실패했습니다.');
                 }
-                setOccurError(res.data.error);
-                toastAlertStore.setAlert('❌ 회원정보 수정에 실패했습니다.');
             })
             .catch(e => console.log(e));
+
+        return navigate(-1);
     });
 
     // 폼 초기화
@@ -145,81 +148,81 @@ export const EditProfilePage = () => {
                 <h2 className='text-center font-extrabold md:text-[18px] mt-[12px] text-[15px] text-gray-500'>
                     { '< 비밀변호 변경은 필수입력 사항이 아닙니다. >' }
                 </h2>
-                <div className='md:w-auto w-full md:px-0'>
+                <div className='w-full md:px-0'>
                     <h2 className={ subTitleStyle }>
                         비밀번호 변경
                     </h2>
-                    <input
-                        {...form.register('password', {
-                            required: false,
-                            minLength: 8, maxLength: 64,
-                            pattern: VALID_PASSWORD,
-                            onChange: (event) => {
-                                // mask
-                                const value = event.target.value;
-                                event.target.value = value.replace(INPUT_PASSWORD, '');
-                            },
-                        })}
-                        type={ showPW ? 'text' : 'password' }
-                        tabIndex={ 4 }
-                        placeholder='수정할 비밀번호를 입력해주세요.'
-                        className={ inputStyle }
-                    />
-                    <div className='flex justify-between mb-[18px] md:w-[386px] w-full'>
-                        <div className={ errorStyle }>
-                            {form.formState.errors.password &&
-                                <h2 className='relative'>
-                                    비밀번호는 최소 8자입니다.
-                                    <h3 className='absolute top-[80%] text-[9px] whitespace-nowrap'>
-                                        숫자, 영문, 특수문자
-                                        <span className='px-[2px] mr-[2px] overflow-hidden font-bold'>
-                                            @$!%*#?&
-                                        </span>
-                                        를 포함해야 합니다.
-                                    </h3>
-                                </h2>
-                            }
-                        </div>
+                    <div className='relative'>
+                        <input
+                            {...form.register('password', {
+                                required: false,
+                                minLength: 8, maxLength: 64,
+                                pattern: VALID_PASSWORD,
+                                onChange: (event) => {
+                                    // mask
+                                    const value = event.target.value;
+                                    event.target.value = value.replace(INPUT_PASSWORD, '');
+                                },
+                            })}
+                            type={ showPassword ? 'text' : 'password' }
+                            tabIndex={ 3 }
+                            placeholder='비밀번호를 입력해주세요.'
+                            className='border border-gray-400 rounded pl-[8px] pr-[30px] py-[4px] w-full'
+                        />
                         <button
                             type='button'
-                            onClick={ () => setShowPW(!showPW) }
-                            className='cursor-pointer [12px] bg-gray-500 h-fit text-gray-100 px-[8px] mr-[4px]'
+                            onClick={ () => setShowPassword(!showPassword) }
+                            className='absolute right-0 text-[12px] h-fit text-gray-100 px-[8px] top-1/2 -translate-y-1/2'
                         >
-                            { showPW ? '비밀번호 숨김' : '비밀번호 확인' }
+                            { showPassword ? <VisibilityOnIcon/> : <VisibilityOffIcon/>}
                         </button>
+                    </div>
+                    <div className={ `${errorStyle} mb-[18px] w-full` }>
+                        {form.formState.errors.password &&
+                            <div className='relative'>
+                                비밀번호는 최소 8자입니다.
+                                <h3 className='absolute top-[80%] text-[9px] whitespace-nowrap'>
+                                    숫자, 영문, 특수문자
+                                    <span className='px-[2px] mr-[2px] overflow-hidden font-bold'>
+                                            @$!%*#?&
+                                        </span>
+                                    를 포함해야 합니다.
+                                </h3>
+                            </div>
+                        }
                     </div>
                     <h2 className={ subTitleStyle }>
                         비밀번호 변경 재확인
                     </h2>
-                    <input
-                        {...form.register('passwordConfirm', {
-                            required: false,
-                            minLength: 8, maxLength: 64,
-                            pattern: VALID_PASSWORD,
-                            validate: (value, data) => value === data.password,
-                            onChange: (event) => {
-                                // mask
-                                const value = event.target.value;
-                                event.target.value = value.replace(INPUT_PASSWORD, '');
-                            },
-                        })}
-                        type={ showConfirmPW ? 'text' : 'password' }
-                        tabIndex={ 5 }
-                        placeholder='비밀번호를 다시 한번 입력해주세요.'
-                        className={ inputStyle }
-                    />
-                    <div className='flex justify-between md:w-[386px] w-full'>
-                        <p className={ errorStyle }>
-                            { form.formState.errors.passwordConfirm && '비밀번호가 동일하지 않습니다.' }
-                        </p>
+                    <div className='relative'>
+                        <input
+                            {...form.register('confirmPassword', {
+                                required: false,
+                                minLength: 8, maxLength: 64,
+                                pattern: VALID_PASSWORD,
+                                validate: (value, data) => value === data.password,
+                                onChange: (event) => {
+                                    // mask
+                                    const value = event.target.value;
+                                    event.target.value = value.replace(INPUT_PASSWORD, '');
+                                },
+                            })}
+                            type={ showConfirmPassword ? 'text' : 'password' }
+                            tabIndex={ 4 }
+                            placeholder='비밀번호를 다시 한번 입력해주세요.'
+                            className='border border-gray-400 rounded pl-[8px] pr-[30px] py-[4px] w-full'
+                        />
                         <button
                             type='button'
-                            onClick={ () => setShowConfirmPW(!showConfirmPW) }
-                            className='cursor-pointer [12px] bg-gray-500 h-fit text-gray-100 px-[8px] mr-[4px]'
+                            onClick={ () => setShowConfirmPassword(!showConfirmPassword) }
+                            className='absolute right-0 text-[12px] h-fit text-gray-100 px-[8px] top-1/2 -translate-y-1/2'
                         >
-                            { showConfirmPW ? '비밀번호 숨김' : '비밀번호 확인' }
+                            { showConfirmPassword ? <VisibilityOnIcon/> : <VisibilityOffIcon/> }
                         </button>
                     </div>
+                    <p className={ errorStyle }>
+                        { form.formState.errors.confirmPassword && '비밀번호가 동일하지 않습니다.' }
+                    </p>
                 </div>
                 <FuncButton
                     options={{

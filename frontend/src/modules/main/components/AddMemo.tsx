@@ -250,7 +250,7 @@ export const AddMemo = () => {
                             <HorizontalScroll>
                                 <div className='flex w-full h-full relative pt-[8px] pb-[9px] overflow-y-hidden'>
                                     {form.watch('tags')?.map((tag, idx) => (
-                                        <div key={ idx } className='relative flex items-center pl-[9px] pr-[21px] py-[1px] mr-[4px] rounded-[4px] bg-black/10 cursor-default'>
+                                        <div key={ idx } className='relative flex items-center pl-[9px] pr-[21px] py-[1px] mr-[4px] rounded bg-black/10 cursor-default'>
                                             <span className='font-light text-[11px] text-dark/90 whitespace-nowrap'>
                                                 { tag.name }
                                             </span>

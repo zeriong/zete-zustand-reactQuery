@@ -129,7 +129,7 @@ export const SignInModal = () => {
                                                     })}
                                                     type={ showPassword ? 'text' : 'password' }
                                                     placeholder='비밀번호를 입력해주세요.'
-                                                    className='border border-gray-400 rounded-[4px] pl-[8px] pr-[30px] py-[4px] w-full'
+                                                    className='border border-gray-400 rounded pl-[8px] pr-[30px] py-[4px] w-full'
                                                 />
                                                 <button
                                                     type='button'

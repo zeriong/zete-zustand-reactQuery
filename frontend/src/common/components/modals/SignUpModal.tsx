@@ -20,7 +20,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
 
     const authStore = useAuthStore();
 
-    const form = useForm<CreateAccountInput & { passwordConfirm?: string }>({ mode: 'onChange' });
+    const form = useForm<CreateAccountInput & { confirmPassword?: string }>({ mode: 'onChange' });
 
     const closeModal = () => {
         form.reset();
@@ -29,7 +29,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
     };
 
     const signupSubmit = form.handleSubmit(async () => {
-        const { passwordConfirm, ...input } = form.getValues();
+        const { confirmPassword, ...input } = form.getValues();
         await Api.user.createAccount(input)
             .then((res) => {
                 if (!res.data.success) return setErrorMessage(res.data.error || '잘못된 접근으로 에러가 발생했습니다.');
@@ -158,7 +158,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
                                         <div>
                                             <div className='relative'>
                                                 <input
-                                                    {...form.register('passwordConfirm', {
+                                                    {...form.register('confirmPassword', {
                                                         required: true,
                                                         minLength: 8, maxLength: 64,
                                                         pattern: VALID_PASSWORD,
@@ -172,7 +172,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
                                                     type={ showConfirmPassword ? 'text' : 'password' }
                                                     tabIndex={ 4 }
                                                     placeholder='비밀번호를 다시 한번 입력해주세요.'
-                                                    className='border border-gray-400 rounded=[4px] px-[8px] py-[4px] w-full'
+                                                    className='border border-gray-400 rounded pl-[8px] pr-[30px] py-[4px] w-full'
                                                 />
                                                 <button
                                                     type='button'
@@ -183,7 +183,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
                                                 </button>
                                             </div>
                                             <p className='mt-[4px] text-red-500 text-[12px] font-normal h-[12px]'>
-                                                { form.formState.errors.passwordConfirm && '비밀번호가 동일하지 않습니다.' }
+                                                { form.formState.errors.confirmPassword && '비밀번호가 동일하지 않습니다.' }
                                             </p>
                                         </div>
                                         <div>
@@ -199,7 +199,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
                                                 })}
                                                 tabIndex={ 5 }
                                                 placeholder='휴대폰번호를 입력해주세요.'
-                                                className='border border-gray-400 rounded-[4px] px-[8px] py-[4px] w-full'
+                                                className='border border-gray-400 rounded px-[8px] py-[4px] w-full'
                                             />
                                             <p className='mt-[4px] text-red-500 text-[12px] font-normal h-[12px]'>
                                                 { form.formState.errors.mobile && '휴대전화번호를 입력해주세요.' }
