@@ -4,11 +4,11 @@ import {RootState} from '../../../store';
 import {useForm} from 'react-hook-form';
 import {FuncButton} from '../../../common/components/FuncButton';
 import {useNavigate} from 'react-router-dom';
-import {Api} from '../../../openapi/api';
+import {api} from '../../../openapi/api';
 import {setUserReducer} from '../../../store/user/user.slice';
 import {PATTERNS} from '../../../common/constants';
 import {UpdateAccountInput} from '../../../openapi/generated';
-import {useToastAlertStore} from '../../../common/components/ToastAlert';
+import {useToastsStore} from '../../../common/components/Toasts';
 import {VisibilityOffIcon, VisibilityOnIcon} from '../../../common/components/Icons';
 
 export const EditProfilePage = () => {
@@ -20,7 +20,7 @@ export const EditProfilePage = () => {
     const [isRender, setIsRender] = useState(false);
 
     const dispatch = useDispatch();
-    const toastAlertStore = useToastAlertStore.getState();
+    const toastAlertStore = useToastsStore.getState();
     const navigate = useNavigate();
     const userState = useSelector((state: RootState) => (state.user));
 
@@ -49,14 +49,14 @@ export const EditProfilePage = () => {
         // 프로필에 변경사항이 없다면 요청하지 않고 이전 페이지로 이동 (일반적으로 이전페이지는 프로필페이지)
         if (data.name === name && data.email === email && data.mobile === mobile && password.length === 0) return navigate(-1);
 
-        await Api.user.updateProfile({ email, name, mobile, password })
+        await api.user.updateProfile({ email, name, mobile, password })
             .then((res) => {
                 if (res.data.success) {
                     dispatch(setUserReducer({...userState, email, name, mobile }));
-                    toastAlertStore.setAlert('✔ 회원정보 수정이 완료되었습니다!');
+                    toastAlertStore.addToast('✔ 회원정보 수정이 완료되었습니다!');
                 } else {
                     setOccurError(res.data.error);
-                    toastAlertStore.setAlert('❌ 회원정보 수정에 실패했습니다.');
+                    toastAlertStore.addToast('❌ 회원정보 수정에 실패했습니다.');
                 }
             })
             .catch(e => console.log(e));

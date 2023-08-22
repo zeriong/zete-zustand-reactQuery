@@ -7,13 +7,13 @@ import {useSearchParams} from 'react-router-dom';
 import {Dialog, Transition} from '@headlessui/react';
 import {CategoryIcon, CloseIcon, FillStarIcon, PlusIcon, StarIcon} from '../../../../common/components/Icons';
 import {removeSpace} from '../../../../libs/common.lib';
-import {Api} from '../../../../openapi/api';
+import {api} from '../../../../openapi/api';
 import {deleteMemoTag, addMemoTagSubmit, focusToContent, loadMemos} from '../../../../libs/memo.lib';
 import {HorizontalScroll} from '../../../../common/components/HorizontalScroll';
 import {updateMemoReducer} from '../../../../store/memo/memo.slice';
 import {getCategoriesAction} from '../../../../store/memo/memo.actions';
 import {AutoResizeInput} from '../../../../common/components/AutoResizeInput';
-import {useToastAlertStore} from '../../../../common/components/ToastAlert';
+import {useToastsStore} from '../../../../common/components/Toasts';
 
 export const EditMemoModal = () => {
     const savedMemoRef = useRef<Memo | null>(null);
@@ -27,7 +27,7 @@ export const EditMemoModal = () => {
     const [isShow, setIsShow] = useState(false);
 
     const dispatch = useDispatch<AppDispatch>();
-    const toastAlertStore = useToastAlertStore.getState();
+    const toastAlertStore = useToastsStore.getState();
     const memoState = useSelector((state:RootState) => state.memo);
 
     const form = useForm<UpdateMemoInput>({ mode: 'onSubmit' });
@@ -52,7 +52,7 @@ export const EditMemoModal = () => {
             // 메모를 받아오기 전까지 로딩상태를 유지하기 위함
             isLoadingMemoRef.current = true;
 
-            const res = await Api.memo.getMemo({ id: requestMemoIdRef.current });
+            const res = await api.memo.getMemo({ id: requestMemoIdRef.current });
             if (res.data.success) {
                 const memo = res.data.memo;
                 // 인터넷환경이 좋지않아 지연로드 되는경우 잘못된 데이터가 세팅되는 것을 방지하기 위해
@@ -67,7 +67,7 @@ export const EditMemoModal = () => {
                     form.setValue('isImportant', memo.isImportant);
                 }
             } else {
-                toastAlertStore.setAlert('존재하지 않는 메모입니다.');
+                toastAlertStore.addToast('존재하지 않는 메모입니다.');
                 searchParams.delete('view');
                 setSearchParams(searchParams);
                 loadMemos(true);
@@ -93,18 +93,18 @@ export const EditMemoModal = () => {
             // auto 인자를 전달받아 auto(자동저장인 경우)가 있는 경우라면 팝업알람을 띄우지 않지만
             // 직접 배경을 눌러 update를 요청한 경우라면 팝업 알람을 띄워준다.
             if (auto) return;
-            return toastAlertStore.setAlert('입력내용이 존재하지 않아 마지막 내용을 저장합니다.');
+            return toastAlertStore.addToast('입력내용이 존재하지 않아 마지막 내용을 저장합니다.');
         }
         if (data.title === targetMemo.title && data.content === targetMemo.content && data.cateId === Number(targetMemo.cateId) &&
             targetMemo.tags?.length === diffTagLength && targetMemo.isImportant === data.isImportant) return;
 
         // 변경사항이 존재하고 폼에 내용이 존재한다면 수정된 내용을 저장할 수 있도록 요청
         try {
-            const res = await Api.memo.updateMemo({ ...data, id: savedMemoRef.current.id });
+            const res = await api.memo.updateMemo({ ...data, id: savedMemoRef.current.id });
             if (res.data.success) savedMemoRef.current = res.data.savedMemo;
-            else toastAlertStore.setAlert(res.data.error);
+            else toastAlertStore.addToast(res.data.error);
         } catch (e) {
-            toastAlertStore.setAlert('메모 수정에 실패하였습니다.');
+            toastAlertStore.addToast('메모 수정에 실패하였습니다.');
             loadMemos(true);
         }
 

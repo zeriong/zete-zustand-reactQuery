@@ -9,13 +9,22 @@ export * from "./configuration";
 import {AxiosInstance} from "axios";
 
 {{#apiInfo}}{{#apis}}
-import { {{classname}}Factory } from "./api/{{classFilename}}";
+    import { {{classname}}Factory } from "./api/{{classFilename}}";
+    import { {{classname}}DataFactory } from "./api/{{classFilename}}";
 {{/apis}}{{/apiInfo}}
 
-export const exportApis = (axios: AxiosInstance) => {
-    return {
-        {{#apiInfo}}{{#apis}}
-            {{classVarName}}: {{classname}}Factory(undefined, "", axios),
-        {{/apis}}{{/apiInfo}}
-    }
+export const exportApiFactory = (axios: AxiosInstance) => {
+return {
+{{#apiInfo}}{{#apis}}
+    {{classVarName}}: {{classname}}Factory(undefined, '', axios),
+{{/apis}}{{/apiInfo}}
+}
+}
+
+export const exportApiDataFactory = (axios: AxiosInstance) => {
+return {
+{{#apiInfo}}{{#apis}}
+    {{classVarName}}: {{classname}}DataFactory(axios),
+{{/apis}}{{/apiInfo}}
+}
 }

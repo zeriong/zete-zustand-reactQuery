@@ -2,11 +2,11 @@ import {getQueryParams, isIntegerString} from './common.lib';
 import {store} from '../store';
 import {searchMemosAction} from '../store/memo/memo.actions';
 import {MEMO_LIST_REQUEST_LIMIT} from '../common/constants';
-import {Api} from '../openapi/api';
+import {api} from '../openapi/api';
 import {useAuthStore} from '../store/authStore';
 import {memoSlice} from '../store/memo/memo.slice';
 import {userSlice} from '../store/user/user.slice';
-import {useToastAlertStore} from '../common/components/ToastAlert';
+import {useToastsStore} from '../common/components/Toasts';
 
 /** URL QueryParams기준으로 카테고리 id를 반환하는 함수 */
 export const getCategoryId = (searchParams): number => {
@@ -30,7 +30,7 @@ export const addMemoTagSubmit = (event, form) => {
     const tags = form.getValues('tags') || [];
     const exists = tags.find(tag => tag.name === value);
 
-    if (exists) return useToastAlertStore.getState().setAlert('.이미 존재하는 태그명 입니다.');
+    if (exists) return useToastsStore.getState().addToast('.이미 존재하는 태그명 입니다.');
 
     form.setValue('tags', [ ...tags, { name: input.value } ]);
     input.value = '';
@@ -48,7 +48,7 @@ export const focusToContent = (event) => {
 export const logout = () => {
     const authStore = useAuthStore.getState();
     (async () => {
-        await Api.auth.logout()
+        await api.auth.logout()
             .then((res) => {
                 if (res.data.success) authStore.setLogout();
                 else console.log(res.data.error);

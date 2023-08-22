@@ -530,7 +530,7 @@ export const MemoApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        changeImportant(changeImportantInput: ChangeImportantInput, options?: any): AxiosPromise<ChangeImportantOutput> {
+        async changeImportant(changeImportantInput: ChangeImportantInput, options?: any): AxiosPromise<ChangeImportantOutput> {
             return localVarFp.changeImportant(changeImportantInput, options).then((request) => request(axios, basePath));
         },
         /**
@@ -539,7 +539,7 @@ export const MemoApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createCategory(createCategoryInput: CreateCategoryInput, options?: any): AxiosPromise<CreateCategoryOutput> {
+        async createCategory(createCategoryInput: CreateCategoryInput, options?: any): AxiosPromise<CreateCategoryOutput> {
             return localVarFp.createCategory(createCategoryInput, options).then((request) => request(axios, basePath));
         },
         /**
@@ -548,7 +548,7 @@ export const MemoApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createMemo(createMemoInput: CreateMemoInput, options?: any): AxiosPromise<CreateMemoOutput> {
+        async createMemo(createMemoInput: CreateMemoInput, options?: any): AxiosPromise<CreateMemoOutput> {
             return localVarFp.createMemo(createMemoInput, options).then((request) => request(axios, basePath));
         },
         /**
@@ -557,7 +557,7 @@ export const MemoApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteCategory(deleteCategoryInput: DeleteCategoryInput, options?: any): AxiosPromise<GetCategoriesOutput> {
+        async deleteCategory(deleteCategoryInput: DeleteCategoryInput, options?: any): AxiosPromise<GetCategoriesOutput> {
             return localVarFp.deleteCategory(deleteCategoryInput, options).then((request) => request(axios, basePath));
         },
         /**
@@ -566,7 +566,7 @@ export const MemoApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteMemo(deleteMemoInput: DeleteMemoInput, options?: any): AxiosPromise<CoreOutput> {
+        async deleteMemo(deleteMemoInput: DeleteMemoInput, options?: any): AxiosPromise<CoreOutput> {
             return localVarFp.deleteMemo(deleteMemoInput, options).then((request) => request(axios, basePath));
         },
         /**
@@ -574,7 +574,7 @@ export const MemoApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getCategories(options?: any): AxiosPromise<GetCategoriesOutput> {
+        async getCategories(options?: any): AxiosPromise<GetCategoriesOutput> {
             return localVarFp.getCategories(options).then((request) => request(axios, basePath));
         },
         /**
@@ -583,7 +583,7 @@ export const MemoApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMemo(getMemoInput: GetMemoInput, options?: any): AxiosPromise<GetMemoOutput> {
+        async getMemo(getMemoInput: GetMemoInput, options?: any): AxiosPromise<GetMemoOutput> {
             return localVarFp.getMemo(getMemoInput, options).then((request) => request(axios, basePath));
         },
         /**
@@ -592,7 +592,7 @@ export const MemoApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchMemos(searchMemosInput: SearchMemosInput, options?: any): AxiosPromise<SearchMemosOutput> {
+        async searchMemos(searchMemosInput: SearchMemosInput, options?: any): AxiosPromise<SearchMemosOutput> {
             return localVarFp.searchMemos(searchMemosInput, options).then((request) => request(axios, basePath));
         },
         /**
@@ -601,7 +601,7 @@ export const MemoApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateCategory(updateCategoryInput: UpdateCategoryInput, options?: any): AxiosPromise<CoreOutput> {
+        async updateCategory(updateCategoryInput: UpdateCategoryInput, options?: any): AxiosPromise<CoreOutput> {
             return localVarFp.updateCategory(updateCategoryInput, options).then((request) => request(axios, basePath));
         },
         /**
@@ -610,11 +610,122 @@ export const MemoApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateMemo(updateMemoInput: UpdateMemoInput, options?: any): AxiosPromise<UpdateMemoOutput> {
+        async updateMemo(updateMemoInput: UpdateMemoInput, options?: any): AxiosPromise<UpdateMemoOutput> {
             return localVarFp.updateMemo(updateMemoInput, options).then((request) => request(axios, basePath));
         },
     };
 };
+
+
+/**
+* MemoApi - factory interface
+* @export
+*/
+export const MemoApiDataFactory = function (axios?: AxiosInstance) {
+    const localVarFactory = MemoApiFactory(undefined, "", axios)
+    return {
+                /**
+                * 
+                        * @param {ChangeImportantInput} changeImportantInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async changeImportant(changeImportantInput: ChangeImportantInput, options?: any): Promise<ChangeImportantOutput> {
+                    const response = await localVarFactory.changeImportant(changeImportantInput, options);
+                    return response.data;
+                },
+                /**
+                * 
+                        * @param {CreateCategoryInput} createCategoryInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async createCategory(createCategoryInput: CreateCategoryInput, options?: any): Promise<CreateCategoryOutput> {
+                    const response = await localVarFactory.createCategory(createCategoryInput, options);
+                    return response.data;
+                },
+                /**
+                * 
+                        * @param {CreateMemoInput} createMemoInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async createMemo(createMemoInput: CreateMemoInput, options?: any): Promise<CreateMemoOutput> {
+                    const response = await localVarFactory.createMemo(createMemoInput, options);
+                    return response.data;
+                },
+                /**
+                * 
+                        * @param {DeleteCategoryInput} deleteCategoryInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async deleteCategory(deleteCategoryInput: DeleteCategoryInput, options?: any): Promise<GetCategoriesOutput> {
+                    const response = await localVarFactory.deleteCategory(deleteCategoryInput, options);
+                    return response.data;
+                },
+                /**
+                * 
+                        * @param {DeleteMemoInput} deleteMemoInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async deleteMemo(deleteMemoInput: DeleteMemoInput, options?: any): Promise<CoreOutput> {
+                    const response = await localVarFactory.deleteMemo(deleteMemoInput, options);
+                    return response.data;
+                },
+                /**
+                * 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async getCategories(options?: any): Promise<GetCategoriesOutput> {
+                    const response = await localVarFactory.getCategories(options);
+                    return response.data;
+                },
+                /**
+                * 
+                        * @param {GetMemoInput} getMemoInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async getMemo(getMemoInput: GetMemoInput, options?: any): Promise<GetMemoOutput> {
+                    const response = await localVarFactory.getMemo(getMemoInput, options);
+                    return response.data;
+                },
+                /**
+                * 
+                        * @param {SearchMemosInput} searchMemosInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async searchMemos(searchMemosInput: SearchMemosInput, options?: any): Promise<SearchMemosOutput> {
+                    const response = await localVarFactory.searchMemos(searchMemosInput, options);
+                    return response.data;
+                },
+                /**
+                * 
+                        * @param {UpdateCategoryInput} updateCategoryInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async updateCategory(updateCategoryInput: UpdateCategoryInput, options?: any): Promise<CoreOutput> {
+                    const response = await localVarFactory.updateCategory(updateCategoryInput, options);
+                    return response.data;
+                },
+                /**
+                * 
+                        * @param {UpdateMemoInput} updateMemoInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async updateMemo(updateMemoInput: UpdateMemoInput, options?: any): Promise<UpdateMemoOutput> {
+                    const response = await localVarFactory.updateMemo(updateMemoInput, options);
+                    return response.data;
+                },
+    };
+};
+
 
 /**
  * MemoApi - object-oriented interface

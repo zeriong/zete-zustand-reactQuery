@@ -3,7 +3,7 @@ import {useSearchParams} from 'react-router-dom';
 import {useForm} from 'react-hook-form';
 import {Dialog, Transition } from '@headlessui/react';
 import {FuncButton} from '../FuncButton';
-import {Api} from '../../../openapi/api';
+import {api} from '../../../openapi/api';
 import {PATTERNS} from '../../constants';
 import {VisibilityOffIcon, VisibilityOnIcon} from '../Icons';
 import {CreateAccountInput} from '../../../openapi/generated';
@@ -30,7 +30,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
 
     const signupSubmit = form.handleSubmit(async () => {
         const { confirmPassword, ...input } = form.getValues();
-        await Api.user.createAccount(input)
+        await api.user.createAccount(input)
             .then((res) => {
                 if (!res.data.success) return setErrorMessage(res.data.error || '잘못된 접근으로 에러가 발생했습니다.');
                 closeModal();

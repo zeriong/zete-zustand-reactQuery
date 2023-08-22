@@ -310,7 +310,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAccount(createAccountInput: CreateAccountInput, options?: any): AxiosPromise<CoreOutput> {
+        async createAccount(createAccountInput: CreateAccountInput, options?: any): AxiosPromise<CoreOutput> {
             return localVarFp.createAccount(createAccountInput, options).then((request) => request(axios, basePath));
         },
         /**
@@ -319,7 +319,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteAccount(id: number, options?: any): AxiosPromise<CoreOutput> {
+        async deleteAccount(id: number, options?: any): AxiosPromise<CoreOutput> {
             return localVarFp.deleteAccount(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -327,7 +327,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAll(options?: any): AxiosPromise<Array<User>> {
+        async getAll(options?: any): AxiosPromise<Array<User>> {
             return localVarFp.getAll(options).then((request) => request(axios, basePath));
         },
         /**
@@ -335,7 +335,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getGptUsableCount(options?: any): AxiosPromise<GetGptUsableCountOutput> {
+        async getGptUsableCount(options?: any): AxiosPromise<GetGptUsableCountOutput> {
             return localVarFp.getGptUsableCount(options).then((request) => request(axios, basePath));
         },
         /**
@@ -343,7 +343,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProfile(options?: any): AxiosPromise<User> {
+        async getProfile(options?: any): AxiosPromise<User> {
             return localVarFp.getProfile(options).then((request) => request(axios, basePath));
         },
         /**
@@ -352,11 +352,80 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateProfile(updateAccountInput: UpdateAccountInput, options?: any): AxiosPromise<CoreOutput> {
+        async updateProfile(updateAccountInput: UpdateAccountInput, options?: any): AxiosPromise<CoreOutput> {
             return localVarFp.updateProfile(updateAccountInput, options).then((request) => request(axios, basePath));
         },
     };
 };
+
+
+/**
+* UserApi - factory interface
+* @export
+*/
+export const UserApiDataFactory = function (axios?: AxiosInstance) {
+    const localVarFactory = UserApiFactory(undefined, "", axios)
+    return {
+                /**
+                * 
+                        * @param {CreateAccountInput} createAccountInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async createAccount(createAccountInput: CreateAccountInput, options?: any): Promise<CoreOutput> {
+                    const response = await localVarFactory.createAccount(createAccountInput, options);
+                    return response.data;
+                },
+                /**
+                * 
+                        * @param {number} id 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async deleteAccount(id: number, options?: any): Promise<CoreOutput> {
+                    const response = await localVarFactory.deleteAccount(id, options);
+                    return response.data;
+                },
+                /**
+                * 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async getAll(options?: any): Promise<Array<User>> {
+                    const response = await localVarFactory.getAll(options);
+                    return response.data;
+                },
+                /**
+                * 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async getGptUsableCount(options?: any): Promise<GetGptUsableCountOutput> {
+                    const response = await localVarFactory.getGptUsableCount(options);
+                    return response.data;
+                },
+                /**
+                * 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async getProfile(options?: any): Promise<User> {
+                    const response = await localVarFactory.getProfile(options);
+                    return response.data;
+                },
+                /**
+                * 
+                        * @param {UpdateAccountInput} updateAccountInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async updateProfile(updateAccountInput: UpdateAccountInput, options?: any): Promise<CoreOutput> {
+                    const response = await localVarFactory.updateProfile(updateAccountInput, options);
+                    return response.data;
+                },
+    };
+};
+
 
 /**
  * UserApi - object-oriented interface

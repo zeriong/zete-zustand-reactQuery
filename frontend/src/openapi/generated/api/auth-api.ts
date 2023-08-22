@@ -182,7 +182,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        login(loginInput: LoginInput, options?: any): AxiosPromise<LoginOutput> {
+        async login(loginInput: LoginInput, options?: any): AxiosPromise<LoginOutput> {
             return localVarFp.login(loginInput, options).then((request) => request(axios, basePath));
         },
         /**
@@ -190,7 +190,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        logout(options?: any): AxiosPromise<CoreOutput> {
+        async logout(options?: any): AxiosPromise<CoreOutput> {
             return localVarFp.logout(options).then((request) => request(axios, basePath));
         },
         /**
@@ -198,11 +198,51 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        refreshToken(options?: any): AxiosPromise<AccessTokenOutput> {
+        async refreshToken(options?: any): AxiosPromise<AccessTokenOutput> {
             return localVarFp.refreshToken(options).then((request) => request(axios, basePath));
         },
     };
 };
+
+
+/**
+* AuthApi - factory interface
+* @export
+*/
+export const AuthApiDataFactory = function (axios?: AxiosInstance) {
+    const localVarFactory = AuthApiFactory(undefined, "", axios)
+    return {
+                /**
+                * 
+                        * @param {LoginInput} loginInput 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async login(loginInput: LoginInput, options?: any): Promise<LoginOutput> {
+                    const response = await localVarFactory.login(loginInput, options);
+                    return response.data;
+                },
+                /**
+                * 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async logout(options?: any): Promise<CoreOutput> {
+                    const response = await localVarFactory.logout(options);
+                    return response.data;
+                },
+                /**
+                * 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async refreshToken(options?: any): Promise<AccessTokenOutput> {
+                    const response = await localVarFactory.refreshToken(options);
+                    return response.data;
+                },
+    };
+};
+
 
 /**
  * AuthApi - object-oriented interface

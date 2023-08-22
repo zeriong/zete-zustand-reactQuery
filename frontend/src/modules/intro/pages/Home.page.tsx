@@ -1,15 +1,15 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Link, useSearchParams} from 'react-router-dom';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../store';
 import memoImg from '../../../assets/scroll-g6570d2351_1920.png';
 import {useAuthStore} from '../../../store/authStore';
+import {useQuery} from '@tanstack/react-query';
+import {User} from '../../../openapi/generated';
 
 export const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const authStore = useAuthStore();
-    const userState = useSelector((state: RootState) => state.user);
+    const user = useQuery<User>(['user']);
 
     const openSignInModal = () => {
         searchParams.set('modal','sign-in');
@@ -21,7 +21,7 @@ export const Home = () => {
         setSearchParams(searchParams);
     }
 
-    return !userState.loading &&
+    return !user.isLoading &&
         <div className='flex h-full w-full overflow-hidden'>
             <div className='flex flex-col items-center md:items-end justify-center w-full md:w-1/2 font-bold text-[48px] text-gray-800 z-20 text-center md:pr-[5%]'>
                 <div className='flex flex-col items-center w-[450px]'>
@@ -37,7 +37,7 @@ export const Home = () => {
                     {authStore.isLoggedIn ? (
                         <div className='flex flex-col mt-[40px]'>
                             <h1 className='flex text-[26px] font-bold justify-center'>
-                                { userState.data?.name && `어서오세요! ${ userState.data?.name }님` }
+                                { user.data?.name && `어서오세요! ${ user.data?.name }님` }
                             </h1>
                             <Link
                                 to='memo'

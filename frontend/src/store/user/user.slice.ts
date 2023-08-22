@@ -17,6 +17,7 @@ export const userSlice = createSlice({
     reducers: {
         setUserReducer: (state, { payload }) => {
             state.data = payload;
+            state.loading = false;
         },
     },
     extraReducers: (builder) => {

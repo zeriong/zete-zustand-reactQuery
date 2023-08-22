@@ -102,11 +102,33 @@ export const OpenAiApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createCompletion(createCompletionDto: CreateCompletionDto, options?: any): AxiosPromise<CreateCompletionOutputDto> {
+        async createCompletion(createCompletionDto: CreateCompletionDto, options?: any): AxiosPromise<CreateCompletionOutputDto> {
             return localVarFp.createCompletion(createCompletionDto, options).then((request) => request(axios, basePath));
         },
     };
 };
+
+
+/**
+* OpenAiApi - factory interface
+* @export
+*/
+export const OpenAiApiDataFactory = function (axios?: AxiosInstance) {
+    const localVarFactory = OpenAiApiFactory(undefined, "", axios)
+    return {
+                /**
+                * 
+                        * @param {CreateCompletionDto} createCompletionDto 
+                * @param {*} [options] Override http request option.
+                * @throws {RequiredError}
+                */
+                async createCompletion(createCompletionDto: CreateCompletionDto, options?: any): Promise<CreateCompletionOutputDto> {
+                    const response = await localVarFactory.createCompletion(createCompletionDto, options);
+                    return response.data;
+                },
+    };
+};
+
 
 /**
  * OpenAiApi - object-oriented interface

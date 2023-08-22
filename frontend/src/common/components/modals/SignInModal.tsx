@@ -5,7 +5,7 @@ import {Dialog, Transition } from '@headlessui/react';
 import {useDispatch} from 'react-redux';
 import {AppDispatch} from '../../../store';
 import {FuncButton} from '../FuncButton';
-import {Api} from '../../../openapi/api';
+import {api} from '../../../openapi/api';
 import {LoginInput} from '../../../openapi/generated';
 import {PATTERNS} from '../../constants';
 import {VisibilityOffIcon, VisibilityOnIcon} from '../Icons';
@@ -38,7 +38,7 @@ export const SignInModal = () => {
     }
 
     const signInSubmit = form.handleSubmit(async () => {
-        await Api.auth.login(form.getValues())
+        await api.auth.login(form.getValues())
             .then((res) => {
                 (async () => {
                     if (!res.data.success) {

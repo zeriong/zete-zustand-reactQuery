@@ -7,7 +7,7 @@ import CustomScroller from '../../../../common/components/customScroller';
 import {ConfirmButton} from '../../../../common/components/ConfirmButton';
 import {createCategoryAction, deleteCategoryAction, getCategoriesAction, updateCategoryAction} from '../../../../store/memo/memo.actions';
 import {CoreOutput} from '../../../../openapi/generated';
-import {useToastAlertStore} from '../../../../common/components/ToastAlert';
+import {useToastsStore} from '../../../../common/components/Toasts';
 
 export const EditCategoryModal = (props: { buttonText: string }) => {
     const [isShow, setIsShow] = useState(false);
@@ -15,7 +15,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
     const [updateInputValues, setUpdateInputValues] = useState<{ [key: number]: string }>({});
 
     const dispatch = useDispatch<AppDispatch>();
-    const toastAlertStore = useToastAlertStore.getState();
+    const toastAlertStore = useToastsStore.getState();
     const memoState = useSelector((state: RootState) => state.memo);
 
     const openModal = () => setIsShow(true);
@@ -45,7 +45,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                 // 업데이트 실패시 원래 값으로
                 if (!data.success) {
                     input.value = prevVal;
-                    toastAlertStore.setAlert(data.error);
+                    toastAlertStore.addToast(data.error);
                 }
             });
         }

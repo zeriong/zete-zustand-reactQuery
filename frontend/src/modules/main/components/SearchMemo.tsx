@@ -2,12 +2,12 @@ import {SearchIcon} from '../../../common/components/Icons';
 import React, {useEffect, useState} from 'react';
 import {useSearchParams} from 'react-router-dom';
 import {useForm} from 'react-hook-form';
-import {useToastAlertStore} from '../../../common/components/ToastAlert';
+import {useToastsStore} from '../../../common/components/Toasts';
 
 export const SearchMemo = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const toastAlertStore = useToastAlertStore.getState();
+    const toastAlertStore = useToastsStore.getState();
 
     const form = useForm<{ search?: string }>();
 
@@ -27,7 +27,7 @@ export const SearchMemo = () => {
 
     // 검색 시 에러가 나는 경우는 255자 이상으로 검색했을때로 한정지어 팝업 알람을 띄운다.
     useEffect(() => {
-        if (form.formState.errors.search) toastAlertStore.setAlert('메모검색은 255자 까지 가능합니다.');
+        if (form.formState.errors.search) toastAlertStore.addToast('메모검색은 255자 까지 가능합니다.');
     },[form.formState.errors.search]);
 
     // 카테고리, 태그변경 감지하여 검색 인풋 초기화
