@@ -27,7 +27,7 @@ export const EditMemoModal = () => {
     const [isShow, setIsShow] = useState(false);
 
     const dispatch = useDispatch<AppDispatch>();
-    const toastAlertStore = useToastsStore.getState();
+    const toastsStore = useToastsStore.getState();
     const memoState = useSelector((state:RootState) => state.memo);
 
     const form = useForm<UpdateMemoInput>({ mode: 'onSubmit' });
@@ -67,7 +67,7 @@ export const EditMemoModal = () => {
                     form.setValue('isImportant', memo.isImportant);
                 }
             } else {
-                toastAlertStore.addToast('존재하지 않는 메모입니다.');
+                toastsStore.addToast('존재하지 않는 메모입니다.');
                 searchParams.delete('view');
                 setSearchParams(searchParams);
                 loadMemos(true);
@@ -93,7 +93,7 @@ export const EditMemoModal = () => {
             // auto 인자를 전달받아 auto(자동저장인 경우)가 있는 경우라면 팝업알람을 띄우지 않지만
             // 직접 배경을 눌러 update를 요청한 경우라면 팝업 알람을 띄워준다.
             if (auto) return;
-            return toastAlertStore.addToast('입력내용이 존재하지 않아 마지막 내용을 저장합니다.');
+            return toastsStore.addToast('입력내용이 존재하지 않아 마지막 내용을 저장합니다.');
         }
         if (data.title === targetMemo.title && data.content === targetMemo.content && data.cateId === Number(targetMemo.cateId) &&
             targetMemo.tags?.length === diffTagLength && targetMemo.isImportant === data.isImportant) return;
@@ -102,9 +102,9 @@ export const EditMemoModal = () => {
         try {
             const res = await api.memo.updateMemo({ ...data, id: savedMemoRef.current.id });
             if (res.data.success) savedMemoRef.current = res.data.savedMemo;
-            else toastAlertStore.addToast(res.data.error);
+            else toastsStore.addToast(res.data.error);
         } catch (e) {
-            toastAlertStore.addToast('메모 수정에 실패하였습니다.');
+            toastsStore.addToast('메모 수정에 실패하였습니다.');
             loadMemos(true);
         }
 

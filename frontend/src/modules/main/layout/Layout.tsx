@@ -9,13 +9,17 @@ import {SearchMemo} from '../components/SearchMemo';
 import CustomScroller from '../../../common/components/customScroller';
 import {useWindowResize} from '../../../hooks/useWindowResize';
 import {useLayoutStore} from '../../../store/layoutStore';
+import {useQuery} from '@tanstack/react-query';
+import {User} from '../../../openapi/generated';
 
 export const MemoLayout = () => {
     const [searchParams] = useSearchParams();
 
     const layoutStore = useLayoutStore();
     const memoState = useSelector((state: RootState) => state.memo);
-    const { loading, data } = useSelector((state: RootState) => state.user);
+    // const { loading, data } = useSelector((state: RootState) => state.user);
+
+    const user = useQuery<User>(['user/getProfile'], { enabled: false });
 
     const windowResize = useWindowResize();
 
@@ -40,7 +44,7 @@ export const MemoLayout = () => {
         }
     },[windowResize]);
 
-    return (!loading && data.name) &&
+    return (!user.isLoading && user.data.name) &&
         <>
             <Header/>
             <Aside/>

@@ -3,11 +3,12 @@ import {useSearchParams} from 'react-router-dom';
 import {useForm} from 'react-hook-form';
 import {Dialog, Transition } from '@headlessui/react';
 import {FuncButton} from '../FuncButton';
-import {api} from '../../../openapi/api';
+import {api, apiBundle} from '../../../openapi/api';
 import {PATTERNS} from '../../constants';
 import {VisibilityOffIcon, VisibilityOnIcon} from '../Icons';
 import {CreateAccountInput} from '../../../openapi/generated';
 import {useAuthStore} from '../../../store/authStore';
+import {useMutation} from '@tanstack/react-query';
 
 export const SignUpModal = (props: { successControl: React.Dispatch<React.SetStateAction<boolean>> }) => {
     const { VALID_PASSWORD, INPUT_PASSWORD, EMAIL, INPUT_PHONE } = PATTERNS;
@@ -19,6 +20,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
     const [errorMessage, setErrorMessage] = useState('');
 
     const authStore = useAuthStore();
+    const createAccount = useMutation(apiBundle.user.createAccount);
 
     const form = useForm<CreateAccountInput & { confirmPassword?: string }>({ mode: 'onChange' });
 
@@ -30,13 +32,23 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
 
     const signupSubmit = form.handleSubmit(async () => {
         const { confirmPassword, ...input } = form.getValues();
-        await api.user.createAccount(input)
-            .then((res) => {
-                if (!res.data.success) return setErrorMessage(res.data.error || '잘못된 접근으로 에러가 발생했습니다.');
+
+        createAccount.mutate(input, {
+            onSuccess: (data) => {
+                if (!data.success) setErrorMessage(data.error || '잘못된 접근으로 에러가 발생했습니다.');
                 closeModal();
                 props.successControl(true);
-            })
-            .catch(e => console.log(e));
+            },
+            onError: (error) => setErrorMessage('잘못된 접근으로 에러가 발생했습니다.'),
+        })
+
+        // await api.user.createAccount(input)
+        //     .then((res) => {
+        //         if (!res.data.success) return setErrorMessage(res.data.error || '잘못된 접근으로 에러가 발생했습니다.');
+        //         closeModal();
+        //         props.successControl(true);
+        //     })
+        //     .catch(e => console.log(e));
     });
 
     useEffect(() => {

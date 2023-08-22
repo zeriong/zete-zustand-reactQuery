@@ -1,11 +1,11 @@
 import React from 'react';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../store';
+import {useQuery} from '@tanstack/react-query';
+import {User} from '../../../openapi/generated';
 
 export const Service = () => {
-    const userState = useSelector((state: RootState) => state.user);
+    const user = useQuery<User>(['user/getProfile'], { enabled: false });
 
-    return !userState.loading &&
+    return !user.isLoading &&
         <div className='flex justify-center items-center w-full h-full text-center'>
             <h1 className='text-[32px] font-bold'>
                 서비스 페이지입니다.

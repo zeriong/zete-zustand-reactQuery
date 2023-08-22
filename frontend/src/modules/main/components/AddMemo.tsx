@@ -10,12 +10,13 @@ import {deleteMemoTag, getCategoryId, addMemoTagSubmit, focusToContent} from '..
 import {useOutsideClick} from '../../../hooks/useOutsideClick';
 import {AskAI} from './AskAI';
 import {HorizontalScroll} from '../../../common/components/HorizontalScroll';
-import {api} from '../../../openapi/api';
+import {api, apiBundle} from '../../../openapi/api';
 import {saveMemoReducer} from '../../../store/memo/memo.slice';
 import {getCategoriesAction} from '../../../store/memo/memo.actions';
 import {AutoResizeTextarea} from '../../../common/components/AutoResizeTextarea';
 import {AutoResizeInput} from '../../../common/components/AutoResizeInput';
 import {useToastsStore} from '../../../common/components/Toasts';
+import {useMutation} from '@tanstack/react-query';
 
 export const AddMemo = () => {
     const panelRef = useRef<HTMLDivElement>(null);
@@ -28,8 +29,12 @@ export const AddMemo = () => {
     const [formMode, setFormMode] = useState<'idle' | 'edit' | 'askAI'>('idle');
 
     const dispatch = useDispatch<AppDispatch>();
-    const toastAlertStore = useToastsStore.getState();
+    const toastsStore = useToastsStore.getState();
     const memoState = useSelector((state: RootState) => state.memo);
+
+    // const createMemo = useMutation(apiBundle.memo.createMemo);
+    // const updateMemo = useMutation(apiBundle.memo.updateMemo);
+    // const deleteMemo = useMutation(apiBundle.memo.deleteMemo);
 
     const form = useForm<CreateMemoInput>({ mode: 'onSubmit' });
 
@@ -48,34 +53,59 @@ export const AddMemo = () => {
     const saveMemo = async () => {
         const data = form.getValues();
         isSavingMemoRef.current = true;
+
         // 신규입력
         if (!savedMemoRef.current) {
             // 입력된 내용이 있다면 생성
             if (removeSpace(data?.title).length > 0 || removeSpace(data?.content).length > 0) {
+                // await createMemo.mutateAsync(data, {
+                //     onSuccess: (data) => {
+                //         if (data.success) savedMemoRef.current = data.savedMemo;
+                //         else toastsStore.addToast('메모 저장에 실패하였습니다.');
+                //     },
+                //     onError: (error) => toastsStore.addToast('메모 저장에 실패하였습니다.'),
+                // });
+
                 try {
                     const res = await api.memo.createMemo(data);
                     if (res.data.success) savedMemoRef.current = res.data.savedMemo;
-                    else toastAlertStore.addToast(res.data.error);
+                    else toastsStore.addToast(res.data.error);
                 } catch (e) {
-                    toastAlertStore.addToast('메모 저장에 실패하였습니다.');
+                    toastsStore.addToast('메모 저장에 실패하였습니다.');
                 }
             }
         } else {
             // 내용이 있는 경우 저장
             if (removeSpace(data?.title)?.length > 0 || removeSpace(data?.content).length > 0) {
+                // await updateMemo.mutateAsync({ ...data, id: savedMemoRef.current.id }, {
+                //     onSuccess: (data) => {
+                //         if (data.success) savedMemoRef.current = data.savedMemo;
+                //         else toastsStore.addToast('메모 저장에 실패하였습니다.');
+                //     },
+                //     onError: (error) => toastsStore.addToast('메모 저장에 실패하였습니다.'),
+                // });
+
                 try {
                     const res = await api.memo.updateMemo({ ...data, id: savedMemoRef.current.id });
                     if (res.data.success) savedMemoRef.current = res.data.savedMemo;
-                    else toastAlertStore.addToast(res.data.error);
+                    else toastsStore.addToast(res.data.error);
                 } catch (e) {
-                    toastAlertStore.addToast('메모 저장에 실패하였습니다.');
+                    toastsStore.addToast('메모 저장에 실패하였습니다.');
                 }
             } else {
                 // 저장된 아이디가 존재하지만 내용이 비워진 경우 삭제
+                // await deleteMemo.mutateAsync({ id: savedMemoRef.current.id }, {
+                //     onSuccess: (data) => {
+                //         if (data.success) savedMemoRef.current = null;
+                //         else toastsStore.addToast('삭제된 메모입니다.');
+                //     },
+                //     onError: (error) => toastsStore.addToast('삭제된 메모입니다.'),
+                // });
+
                 try {
                     const res = await api.memo.deleteMemo({id: savedMemoRef.current.id});
                     if (res.data.success) savedMemoRef.current = null;
-                    else toastAlertStore.addToast('삭제된 메모입니다.');
+                    else toastsStore.addToast('삭제된 메모입니다.');
                 } catch (e) {
                     console.log('메모 삭제 실패, 실패사유: ',e);
                 }
@@ -103,10 +133,15 @@ export const AddMemo = () => {
     const cancelAddMemo = async () => {
         isCancelMemoRef.current = true;
         if (savedMemoRef.current) {
+            // await deleteMemo.mutateAsync({ id: savedMemoRef.current.id }, {
+            //     onSuccess: (data) => savedMemoRef.current = null,
+            //     onError: (error) => toastsStore.addToast('삭제된 메모입니다.'),
+            // });
+
             try {
                 const res = await api.memo.deleteMemo({id: savedMemoRef.current.id});
                 if (res.data.success) savedMemoRef.current = null;
-                else toastAlertStore.addToast('삭제된 메모입니다.');
+                else toastsStore.addToast('삭제된 메모입니다.');
             } catch (e) {
                 console.log('메모 삭제 실패, 실패사유: ',e);
             }
@@ -130,7 +165,6 @@ export const AddMemo = () => {
     useEffect(() => {
         // 대기 모드로 변경시 폼 초기화
         if (formMode === 'idle') {
-
             (async () => {
                 const data = form.getValues();
 
@@ -146,13 +180,11 @@ export const AddMemo = () => {
                     if (Number(searchParams.get('cate')) === data.cateId || !searchParams.get('cate')) {
                         dispatch(saveMemoReducer(savedMemoRef.current));
                     }
-
                     // 카테고리 최신화, 임시저장된 메모 삭제
                     dispatch(await getCategoriesAction());
                     savedMemoRef.current = null;
                 }
             })()
-
             // 메모취소를 누른 것이 아니라면 폼 리셋
             if (!isCancelMemoRef.current) resetForm();
             else isCancelMemoRef.current = false;

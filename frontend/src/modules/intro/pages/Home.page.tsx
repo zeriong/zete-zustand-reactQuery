@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {Link, useSearchParams} from 'react-router-dom';
 import memoImg from '../../../assets/scroll-g6570d2351_1920.png';
 import {useAuthStore} from '../../../store/authStore';
@@ -9,7 +9,8 @@ export const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const authStore = useAuthStore();
-    const user = useQuery<User>(['user']);
+    const user = useQuery<User>(['user/getProfile'], { enabled: false })
+    // const user = useQuery<User>(['user/getProfile']);
 
     const openSignInModal = () => {
         searchParams.set('modal','sign-in');

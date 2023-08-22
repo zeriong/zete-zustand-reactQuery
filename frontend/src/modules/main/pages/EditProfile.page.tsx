@@ -20,7 +20,7 @@ export const EditProfilePage = () => {
     const [isRender, setIsRender] = useState(false);
 
     const dispatch = useDispatch();
-    const toastAlertStore = useToastsStore.getState();
+    const toastsStore = useToastsStore.getState();
     const navigate = useNavigate();
     const userState = useSelector((state: RootState) => (state.user));
 
@@ -53,10 +53,10 @@ export const EditProfilePage = () => {
             .then((res) => {
                 if (res.data.success) {
                     dispatch(setUserReducer({...userState, email, name, mobile }));
-                    toastAlertStore.addToast('✔ 회원정보 수정이 완료되었습니다!');
+                    toastsStore.addToast('✔ 회원정보 수정이 완료되었습니다!');
                 } else {
                     setOccurError(res.data.error);
-                    toastAlertStore.addToast('❌ 회원정보 수정에 실패했습니다.');
+                    toastsStore.addToast('❌ 회원정보 수정에 실패했습니다.');
                 }
             })
             .catch(e => console.log(e));

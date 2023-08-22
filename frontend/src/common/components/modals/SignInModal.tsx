@@ -5,12 +5,14 @@ import {Dialog, Transition } from '@headlessui/react';
 import {useDispatch} from 'react-redux';
 import {AppDispatch} from '../../../store';
 import {FuncButton} from '../FuncButton';
-import {api} from '../../../openapi/api';
-import {LoginInput} from '../../../openapi/generated';
+import {api, apiBundle} from '../../../openapi/api';
+import {LoginInput, User} from '../../../openapi/generated';
 import {PATTERNS} from '../../constants';
 import {VisibilityOffIcon, VisibilityOnIcon} from '../Icons';
 import {getProfile} from '../../../store/user/user.actions';
 import {useAuthStore} from '../../../store/authStore';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {setUserReducer} from '../../../store/user/user.slice';
 
 export const SignInModal = () => {
     const { VALID_PASSWORD, INPUT_PASSWORD, EMAIL } = PATTERNS;
@@ -23,6 +25,8 @@ export const SignInModal = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const authStore = useAuthStore();
+    const login = useMutation(apiBundle.auth.login);
+    const user = useQuery<User>(['user/getProfile']);
 
     const form = useForm<LoginInput>({ mode: 'onChange' });
 
@@ -37,25 +41,40 @@ export const SignInModal = () => {
         form.reset();
     }
 
-    const signInSubmit = form.handleSubmit(async () => {
-        await api.auth.login(form.getValues())
-            .then((res) => {
-                (async () => {
-                    if (!res.data.success) {
-                        authStore.setLogout();
-                        setErrorMessage(res.data.error);
-                        return;
-                    }
+    const signInSubmit = form.handleSubmit(() => {
+        login.mutate(form.getValues(), {
+            onSuccess: async (data) => {
+                if (data.success) {
                     closeModal();
-                    authStore.setLogin(res.data.accessToken);
-                    dispatch(await getProfile());
+                    await user.refetch();
+                    authStore.setLogin(data.accessToken);
                     navigate('/memo');
-                })()
-            })
-            .catch((e) => {
-                setErrorMessage('서버와 통신할 수 없습니다.');
-                console.log(e);
-            });
+                } else {
+                    authStore.setLogout();
+                    setErrorMessage(data.error);
+                }
+            },
+            onError: (error) => setErrorMessage('서버와 통신할 수 없습니다.'),
+        })
+
+        // await api.auth.login(form.getValues())
+        //     .then((res) => {
+        //         (async () => {
+        //             if (!res.data.success) {
+        //                 authStore.setLogout();
+        //                 setErrorMessage(res.data.error);
+        //                 return;
+        //             }
+        //             closeModal();
+        //             authStore.setLogin(res.data.accessToken);
+        //             dispatch(await getProfile());
+        //             navigate('/memo');
+        //         })()
+        //     })
+        //     .catch((e) => {
+        //         setErrorMessage('서버와 통신할 수 없습니다.');
+        //         console.log(e);
+        //     });
     });
 
     useEffect(() => {

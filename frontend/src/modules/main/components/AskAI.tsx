@@ -1,10 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {UseFormReturn} from 'react-hook-form';
-import {api} from '../../../openapi/api';
+import {api, apiBundle} from '../../../openapi/api';
 import CustomScroller from '../../../common/components/customScroller';
 import axios from 'axios';
 import {AutoResizeTextarea} from '../../../common/components/AutoResizeTextarea';
 import {useToastsStore} from '../../../common/components/Toasts';
+import {useMutation} from '@tanstack/react-query';
+import {CreateCompletionDto} from '../../../openapi/generated';
 
 export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) => {
     const requestRef = useRef(null);
@@ -15,17 +17,53 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
     const [message, setMessage] = useState('');
     const [inputValue, setInputValue] = useState('');
 
-    const toastAlertStore = useToastsStore.getState();
+    const toastsStore = useToastsStore.getState();
 
-    const askAiSubmit = (event) => {
+    // requestRef.current = axios.CancelToken.source();
+    // const askAi = useMutation({
+    //     mutationFn: (variables: CreateCompletionDto) => {
+    //         return apiBundle.openAi.createCompletion(variables, { cancelToken: requestRef.current.token })
+    //     }
+    // });
+
+    const askAiSubmit = async (event) => {
         event.preventDefault();
 
-        if (usableCount <= 0) return toastAlertStore.addToast('질문가능 횟수가 초과하였습니다, 매일 자정이 지나면 충전됩니다.');
 
-        if (!inputValue || inputValue.length < 2) return toastAlertStore.addToast('질문을 입력해 주시기 바랍니다.');
+        if (usableCount <= 0) return toastsStore.addToast('질문가능 횟수가 초과하였습니다, 매일 자정이 지나면 충전됩니다.');
+
+        if (!inputValue || inputValue.length < 2) return toastsStore.addToast('질문을 입력해 주시기 바랍니다.');
 
         requestRef.current = axios.CancelToken.source();
         setIsLoading(true);
+
+        // await askAi.mutateAsync({ content: inputValue }, {
+        //     onSuccess: (data) => {
+        //         if (data.success) {
+        //             // 사용자경험을 향상을 위해 요청을 받은 후 대기 시간동안 '답변이 거의 완성되었어요!' 문구를 띄움
+        //             setIsWaiting(true);
+        //
+        //             // gpt 3.5 turbo 무료 크레딧 특성상 요청이 매우느리고 연속요청에 에러를 발생시키기 때문에 요청에러방지,
+        //             setTimeout(() => {
+        //                 setIsWaiting(false);
+        //                 setIsLoading(false);
+        //             }, 5000);
+        //
+        //             if (data.gptResponse) {
+        //                 setUsableCount(data.usableCount);
+        //                 setMessage(data.gptResponse);
+        //             }
+        //         } else if (data?.error) {
+        //             toastsStore.addToast(data.error);
+        //             setIsLoading(false);
+        //         }
+        //     },
+        //     onError: (error) => {
+        //         toastsStore.addToast('GPT 답변 요청이 취소되었습니다.');
+        //         setIsLoading(false);
+        //     }
+        // })
+
         api.openAi.createCompletion({ content: inputValue }, { cancelToken: requestRef.current.token })
             .then((res) => {
                 if (res.data?.success) {
@@ -43,12 +81,12 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
                         setMessage(res.data.gptResponse);
                     }
                 } else if (res.data?.error) {
-                    toastAlertStore.addToast(res.data.error);
+                    toastsStore.addToast(res.data.error);
                     setIsLoading(false);
                 }
             })
             .catch(() => {
-                toastAlertStore.addToast('GPT 답변 요청이 취소되었습니다.');
+                toastsStore.addToast('GPT 답변 요청이 취소되었습니다.');
                 setIsLoading(false);
             });
         setInputValue('');
@@ -65,7 +103,7 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
             if (requestRef.current) requestRef.current.cancel();
 
             // 응답받고 추가대기시간때도 알림을 띄움 (유저입장에선 똑같이 기다리는 상황이기 때문)
-            if (isWaiting) toastAlertStore.addToast('GPT 답변 요청이 취소되었습니다.');
+            if (isWaiting) toastsStore.addToast('GPT 답변 요청이 취소되었습니다.');
             setUsableCount(0);
             setIsLoading(false);
             setIsWaiting(false);

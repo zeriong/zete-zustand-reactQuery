@@ -15,7 +15,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
     const [updateInputValues, setUpdateInputValues] = useState<{ [key: number]: string }>({});
 
     const dispatch = useDispatch<AppDispatch>();
-    const toastAlertStore = useToastsStore.getState();
+    const toastsStore = useToastsStore.getState();
     const memoState = useSelector((state: RootState) => state.memo);
 
     const openModal = () => setIsShow(true);
@@ -45,7 +45,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                 // 업데이트 실패시 원래 값으로
                 if (!data.success) {
                     input.value = prevVal;
-                    toastAlertStore.addToast(data.error);
+                    toastsStore.addToast(data.error);
                 }
             });
         }

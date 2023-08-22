@@ -6,13 +6,16 @@ import {HamburgerMenuIcon, LogoutIcon, ModifyIcon} from '../../../common/compone
 import {useLayoutStore} from '../../../store/layoutStore';
 import {useAuthStore} from '../../../store/authStore';
 import {logout} from '../../../libs/memo.lib';
+import {useQuery} from '@tanstack/react-query';
+import {User} from '../../../openapi/generated';
 
 export const HomeNav = ()=> {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const layoutStore = useLayoutStore();
     const authStore = useAuthStore();
-    const userState = useSelector((state: RootState) => state.user);
+    // const userState = useSelector((state: RootState) => state.user);
+    const user = useQuery<User>(['user/getProfile'], { enabled: false });
 
     const menuList: { name: string, to: string }[] = [
         { name: '서비스', to: '/service' },
@@ -34,7 +37,7 @@ export const HomeNav = ()=> {
         setSearchParams(searchParams);
     }
 
-    return !userState.loading &&
+    return !user.isLoading &&
         <nav className='flex justify-between h-[48px] md:h-auto pl-[12px] pr-[12px] items-center md:px-[40px] py-[12px] border-b border-gray-300 whitespace-nowrap fixed bg-white w-full z-30'>
             <div
                 onClick={ () => layoutStore.setShowSideNav(false) }
@@ -52,7 +55,7 @@ export const HomeNav = ()=> {
             >
                 <div className='block md:hidden font-bold border-b border-b-gray-300 pb-[20px] pl-[8px]'>
                     <div className='text-xl mb-[8px] text-gray-700'>
-                        { authStore.isLoggedIn ? `${ userState.data?.name }님` : '로그인해주세요.' }
+                        { authStore.isLoggedIn ? `${ user.data?.name }님` : '로그인해주세요.' }
                     </div>
                     {authStore.isLoggedIn ? (
                         <>
@@ -114,7 +117,7 @@ export const HomeNav = ()=> {
             {authStore.isLoggedIn ? (
                 <section className='hidden md:flex flex-row items-center'>
                     <div className='text-[20px] font-bold text-gray-600 mr-[16px]'>
-                        { userState.data?.name && `${ userState.data?.name }님` }
+                        { user.data?.name && `${ user.data?.name }님` }
                     </div>
                     <Link
                         to='memo'
