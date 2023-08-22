@@ -1,7 +1,7 @@
-import axios, {AxiosRequestConfig} from 'axios';
 import {exportApis} from './generated';
 import {API_URL} from '../common/constants';
 import {useAuthStore} from '../store/authStore';
+import axios, {InternalAxiosRequestConfig} from 'axios';
 
 const REFRESH_TOKEN_PATH = '/auth/refresh';
 
@@ -52,7 +52,7 @@ axiosInstance.interceptors.response.use((value: any) => value, async (error) => 
 });
 
 axiosInstance.interceptors.request.use(
-    (config: AxiosRequestConfig) => config,
+    (config: InternalAxiosRequestConfig<any>) => config,
     (error) => Promise.reject(error)
 );
 
