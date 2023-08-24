@@ -3,9 +3,9 @@ import {useQuery} from '@tanstack/react-query';
 import {User} from '../../../openapi/generated';
 
 export const Service = () => {
-    const user = useQuery<User>(['user/getProfile'], { enabled: false });
+    const getProfile = useQuery<User>(['user/getProfile'], { enabled: false });
 
-    return !user.isLoading &&
+    return !getProfile.isLoading &&
         <div className='flex justify-center items-center w-full h-full text-center'>
             <h1 className='text-[32px] font-bold'>
                 서비스 페이지입니다.

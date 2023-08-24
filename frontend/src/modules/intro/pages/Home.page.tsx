@@ -9,8 +9,7 @@ export const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const authStore = useAuthStore();
-    const user = useQuery<User>(['user/getProfile'], { enabled: false })
-    // const user = useQuery<User>(['user/getProfile']);
+    const getProfile = useQuery<User>(['user/getProfile'], { enabled: false })
 
     const openSignInModal = () => {
         searchParams.set('modal','sign-in');
@@ -22,7 +21,7 @@ export const Home = () => {
         setSearchParams(searchParams);
     }
 
-    return !user.isLoading &&
+    return (
         <div className='flex h-full w-full overflow-hidden'>
             <div className='flex flex-col items-center md:items-end justify-center w-full md:w-1/2 font-bold text-[48px] text-gray-800 z-20 text-center md:pr-[5%]'>
                 <div className='flex flex-col items-center w-[450px]'>
@@ -38,7 +37,7 @@ export const Home = () => {
                     {authStore.isLoggedIn ? (
                         <div className='flex flex-col mt-[40px]'>
                             <h1 className='flex text-[26px] font-bold justify-center'>
-                                { user.data?.name && `어서오세요! ${ user.data?.name }님` }
+                                { getProfile.data && `어서오세요! ${ getProfile.data.name }님` }
                             </h1>
                             <Link
                                 to='memo'
@@ -85,4 +84,5 @@ export const Home = () => {
                 />
             </figure>
         </div>
+    )
 }

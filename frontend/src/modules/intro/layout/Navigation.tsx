@@ -14,8 +14,7 @@ export const HomeNav = ()=> {
 
     const layoutStore = useLayoutStore();
     const authStore = useAuthStore();
-    // const userState = useSelector((state: RootState) => state.user);
-    const user = useQuery<User>(['user/getProfile'], { enabled: false });
+    const getProfile = useQuery<User>(['user/getProfile'], { enabled: false });
 
     const menuList: { name: string, to: string }[] = [
         { name: '서비스', to: '/service' },
@@ -37,7 +36,7 @@ export const HomeNav = ()=> {
         setSearchParams(searchParams);
     }
 
-    return !user.isLoading &&
+    return (
         <nav className='flex justify-between h-[48px] md:h-auto pl-[12px] pr-[12px] items-center md:px-[40px] py-[12px] border-b border-gray-300 whitespace-nowrap fixed bg-white w-full z-30'>
             <div
                 onClick={ () => layoutStore.setShowSideNav(false) }
@@ -55,7 +54,7 @@ export const HomeNav = ()=> {
             >
                 <div className='block md:hidden font-bold border-b border-b-gray-300 pb-[20px] pl-[8px]'>
                     <div className='text-xl mb-[8px] text-gray-700'>
-                        { authStore.isLoggedIn ? `${ user.data?.name }님` : '로그인해주세요.' }
+                        { authStore.isLoggedIn ? `${ getProfile.data?.name }님` : '로그인해주세요.' }
                     </div>
                     {authStore.isLoggedIn ? (
                         <>
@@ -117,7 +116,7 @@ export const HomeNav = ()=> {
             {authStore.isLoggedIn ? (
                 <section className='hidden md:flex flex-row items-center'>
                     <div className='text-[20px] font-bold text-gray-600 mr-[16px]'>
-                        { user.data?.name && `${ user.data?.name }님` }
+                        { getProfile.data && `${ getProfile.data.name }님` }
                     </div>
                     <Link
                         to='memo'
@@ -162,4 +161,5 @@ export const HomeNav = ()=> {
                 <HamburgerMenuIcon className='fill-deepPrimary/80'/>
             </button>
         </nav>
+    )
 }

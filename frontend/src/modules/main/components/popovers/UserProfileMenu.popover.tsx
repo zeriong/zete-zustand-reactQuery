@@ -2,20 +2,20 @@ import React from 'react';
 import { Popover, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import {Link} from 'react-router-dom';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../../store';
 import {LogoutIcon, ProfileIcon, UserIcon} from '../../../../common/components/Icons';
 import {logout} from '../../../../libs/memo.lib';
+import {useQuery} from '@tanstack/react-query';
+import {User} from '../../../../openapi/generated';
 
 interface IMenuList {
     name: string;
-    icon: JSX.Element;
+    icon: React.JSX.Element;
     path: string;
     function?: any;
 }
 
 export const UserProfileMenuPopover = () => {
-    const userState = useSelector((state: RootState) => state.user);
+    const getProfile = useQuery<User>(['user/getProfile'], { enabled: false });
 
     const menuList: IMenuList[] = [
         {
@@ -54,7 +54,7 @@ export const UserProfileMenuPopover = () => {
                     >
                         <Popover.Panel className='absolute mt-[12px] w-[160px] md:w-[180px] bg-white right-0 p-[12px] shadow-lg rounded-[8px] overflow-hidden border border-black/10'>
                             <h1 className='text-[18px] font-medium text-dark p-[4px] mb-[4px] cursor-default'>
-                                { userState.data?.name }
+                                { getProfile.data?.name }
                             </h1>
                             {menuList.map((item) => (
                                 <Link

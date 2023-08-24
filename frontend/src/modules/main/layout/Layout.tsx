@@ -19,7 +19,7 @@ export const MemoLayout = () => {
     const memoState = useSelector((state: RootState) => state.memo);
     // const { loading, data } = useSelector((state: RootState) => state.user);
 
-    const user = useQuery<User>(['user/getProfile'], { enabled: false });
+    const getProfile = useQuery<User>(['user/getProfile'], { enabled: false });
 
     const windowResize = useWindowResize();
 
@@ -44,7 +44,7 @@ export const MemoLayout = () => {
         }
     },[windowResize]);
 
-    return (!user.isLoading && user.data.name) &&
+    return (!getProfile.isLoading && getProfile.data) &&
         <>
             <Header/>
             <Aside/>
@@ -69,6 +69,7 @@ export const MemoLayout = () => {
                     <div className='w-full h-full bg-gray-100'>
                         <CustomScroller autoHide={ false }>
                             <Outlet/>
+                            {/*<div onClick={ () => window.scrollTo({ top: 0, behavior: 'smooth' }) } className='bg-red-500 text-white p-[20px] fixed right-[20px] bottom-[20px]' >test</div>*/}
                         </CustomScroller>
                     </div>
                 </div>
