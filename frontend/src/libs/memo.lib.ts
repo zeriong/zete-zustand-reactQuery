@@ -5,8 +5,10 @@ import {MEMO_LIST_REQUEST_LIMIT} from '../common/constants';
 import {api} from '../openapi/api';
 import {useAuthStore} from '../store/authStore';
 import {memoSlice} from '../store/memo/memo.slice';
-import {userSlice} from '../store/user/user.slice';
 import {useToastsStore} from '../common/components/Toasts';
+import {queryClient} from '../index';
+import {createQueryClient} from '@tanstack/react-query/build/lib/__tests__/utils';
+import {QueryClient} from '@tanstack/react-query';
 
 /** URL QueryParams기준으로 카테고리 id를 반환하는 함수 */
 export const getCategoryId = (searchParams): number => {
@@ -36,6 +38,11 @@ export const addMemoTagSubmit = (event, form) => {
     input.value = '';
 }
 
+/** 이름 정렬 함수 */
+export const sortName = (list) => {
+    list.sort((a, b) => a.name > b.name ? 1 : -1);
+}
+
 /** 메모작성의 제목 input에서 enter입력시 내용으로 이동하는 함수 */
 export const focusToContent = (event) => {
     event.preventDefault();
@@ -57,9 +64,9 @@ export const logout = () => {
                 console.log(e);
                 authStore.setLogout();
             });
+        queryClient.removeQueries(['user/getProfile']);
+        store.dispatch(memoSlice.actions.resetMemosReducer());
     })()
-    store.dispatch(memoSlice.actions.resetMemosReducer());
-    store.dispatch(userSlice.actions.setUserReducer(undefined));
 }
 
 /** URL QueryParams에 따른 메모리스트를 요청하는 함수 */

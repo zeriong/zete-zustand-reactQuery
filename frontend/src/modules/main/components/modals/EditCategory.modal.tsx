@@ -1,22 +1,24 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
 import {CatePlusIcon, DeleteIcon, FillCategoryIcon, ModifyIcon} from '../../../../common/components/Icons';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../../../store';
 import CustomScroller from '../../../../common/components/customScroller';
 import {ConfirmButton} from '../../../../common/components/ConfirmButton';
-import {createCategoryAction, deleteCategoryAction, getCategoriesAction, updateCategoryAction} from '../../../../store/memo/memo.actions';
-import {CoreOutput} from '../../../../openapi/generated';
+import {GetCategoriesOutput} from '../../../../openapi/generated';
 import {useToastsStore} from '../../../../common/components/Toasts';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {apiBundle} from '../../../../openapi/api';
 
 export const EditCategoryModal = (props: { buttonText: string }) => {
     const [isShow, setIsShow] = useState(false);
     const [createInputValue, setCreateInputValue] = useState('');
     const [updateInputValues, setUpdateInputValues] = useState<{ [key: number]: string }>({});
 
-    const dispatch = useDispatch<AppDispatch>();
+    const getCategories = useQuery<GetCategoriesOutput>(['memo/getCategories'], { enabled: false })
+    const createCategoryMutation = useMutation(apiBundle.memo.createCategory);
+    const updateCategoryMutation = useMutation(apiBundle.memo.updateCategory);
+    const deleteCategoryMutation = useMutation(apiBundle.memo.deleteCategory);
+
     const toastsStore = useToastsStore.getState();
-    const memoState = useSelector((state: RootState) => state.memo);
 
     const openModal = () => setIsShow(true);
 
@@ -27,36 +29,59 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
     }
 
     // 카테고리 생성 submit
-    const createCategorySubmit = (e) => {
-        e.preventDefault();
+    const createCategorySubmit = (event) => {
+        event.preventDefault();
         if (createInputValue) {
-            dispatch(createCategoryAction({ name: createInputValue })); // 카테고리 생성
-            setCreateInputValue('');  // input 초기화
+            createCategoryMutation.mutate({ name: createInputValue }, {
+                onSuccess: async (data) => {
+                    //dispatch(createCategoryAction({ name: createInputValue })); // 카테고리 생성
+                    if (data.success) {
+                        await getCategories.refetch();
+                        setCreateInputValue('');  // input 초기화
+                    } else {
+                        toastsStore.addToast('이미 존재하는 카테고리입니다.');
+                    }
+                },
+                onError: (error) => {
+                    console.log(error);
+                    toastsStore.addToast('잘못된 접근입니다.');
+                }
+            })
         }
     }
 
     // 카테고리 업데이트 submit
-    const updateCategorySubmit = (id: number, prevVal: string, input: any) => {
+    const updateCategorySubmit = (id: number, originVal: string, input: any) => {
         const val = input.value;
         // 입력 값이 있고 기존 값과 다르다면
-        if (val && val.length > 1 && val !== prevVal) {
-            dispatch(updateCategoryAction({ id: id, name: val })).then((value) => {
-                const data = value.payload as CoreOutput;
-                // 업데이트 실패시 원래 값으로
-                if (!data.success) {
-                    input.value = prevVal;
-                    toastsStore.addToast(data.error);
-                }
+        if (val && val.length > 1 && val !== originVal) {
+            updateCategoryMutation.mutate({ id: id, name: val }, {
+                onSuccess: async (data) => {
+                    if (data.success) await getCategories.refetch();
+                    else {
+                        // 업데이트 실패시 원래 값으로
+                        input.value = originVal;
+                        toastsStore.addToast(data.error);
+                    }
+                },
+                onError: (error) => console.log(error),
             });
         }
     }
 
-    // 모달 오픈시 카테고리 목록 갱신
-    useEffect(() => {
-        if (isShow) dispatch(getCategoriesAction());
-        // 업데이트 관리용 input values 초기화
-        setUpdateInputValues({});
-    },[isShow]);
+    // 카테고리 삭제
+    const deleteCategory = (memoId) => {
+        deleteCategoryMutation.mutate({id: memoId}, {
+            onSuccess: async (data) => {
+                if (data.success) await getCategories.refetch();
+                else console.log(data.error);
+            },
+            onError: (error) => console.log(error),
+        })
+    }
+
+    // 업데이트 관리용 input values 초기화
+    useEffect(() => setUpdateInputValues({}),[isShow]);
 
     return (
         <>
@@ -98,11 +123,11 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                             >
                                 <Dialog.Panel className='relative transform w-[300px] overflow-hidden bg-white text-left shadow-xl'>
                                     <div className='relative h-[430px] w-full p-[16px]'>
-                                        <CustomScroller>
+                                        <CustomScroller customTrackVerticalStyle={{ width: '4px', marginTop: '80px' }}>
                                             <h1 className='text-dark/90'>
                                                 카테고리 추가/수정
                                             </h1>
-                                            <div className='py-[16px] px-[8px] text-[15px]'>
+                                            <div className='pt-[16px] px-[8px] text-[15px]'>
                                                 <form
                                                     onSubmit={ createCategorySubmit }
                                                     className='flex items-center'
@@ -121,8 +146,8 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                                                         <CatePlusIcon className='fill-dark/80'/>
                                                     </button>
                                                 </form>
-                                                <ul className='text-dark/90 grid gap-[16px] py-[20px]'>
-                                                    {memoState.cate.list?.map((memo, idx) => (
+                                                <ul className='text-dark/90 grid gap-[16px] pt-[20px]'>
+                                                    {getCategories.data?.list.map((memo, idx) => (
                                                         <li key={ idx }>
                                                             <form
                                                                 onSubmit={(event) => {
@@ -155,7 +180,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                                                                         subtitle: '카테고리가 삭제되면 하위 메모가<br/>모두 삭제됩니다.',
                                                                         confirmText: '삭제',
                                                                         isNegative: true,
-                                                                        confirmCallback: () => dispatch(deleteCategoryAction({ id: memo.id })),
+                                                                        confirmCallback: () => deleteCategory(memo.id),
                                                                     }}
                                                                     className='relative group p-[6px] rounded-full hover:bg-gray-200/60 -right-[2px]'
                                                                 >

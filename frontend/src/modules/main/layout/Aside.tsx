@@ -1,23 +1,24 @@
-import React, {useEffect, useMemo} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../../store';
+import React, {useMemo} from 'react';
 import CustomScroller from '../../../common/components/customScroller';
 import {EditCategoryModal} from '../components/modals/EditCategory.modal';
 import {Link, To, useSearchParams} from 'react-router-dom';
 import {AllIcon, CategoryIcon, StarIcon, TagIcon} from '../../../common/components/Icons';
 import {Tag} from '../../../openapi/generated';
-import {getCategoriesAction} from '../../../store/memo/memo.actions';
 import {useLayoutStore} from '../../../store/layoutStore';
+import {useQuery} from '@tanstack/react-query';
+import {apiBundle} from '../../../openapi/api';
+import {sortName} from '../../../libs/memo.lib';
 
 export const Aside = () => {
     const layoutStore = useLayoutStore();
-    const dispatch = useDispatch<AppDispatch>();
-    const memoState = useSelector((state: RootState) => state.memo);
 
-    useEffect(() => {
-        // 카테고리 목록 로드
-        (async () => dispatch(await getCategoriesAction()))()
-    }, []);
+    const getCategories = useQuery(['memo/getCategories'], apiBundle.memo.getCategories, {
+        retry: false,
+        select: (data) => {
+            sortName(data.list);
+            return data;
+        },
+    });
 
     return (
         <>
@@ -41,7 +42,7 @@ export const Aside = () => {
                                     cateName='전체메모'
                                     iconComponent={ AllIcon }
                                     iconClassName='mr-[14px] w-[20px]'
-                                    count={ memoState.cate.totalMemoCount }
+                                    count={ getCategories.data?.totalMemoCount }
                                 />
                                 <CateItemList
                                     to={{ pathname: '/memo', search: '?cate=important' }}
@@ -49,14 +50,14 @@ export const Aside = () => {
                                     cateName='중요메모'
                                     iconComponent={ StarIcon }
                                     iconClassName='mr-[14px] w-[20px]'
-                                    count={ memoState.cate.importantMemoCount }
+                                    count={ getCategories.data?.importantMemoCount }
                                 />
                             </ul>
                             <p className='text-dark/90 text-[11px] font-light pb-[14px] pt-[17px] pl-[12px]'>
                                 카테고리
                             </p>
                             <ul className='grid gap-[4px]'>
-                                {memoState.cate.list.map((cate, idx) => (
+                                {getCategories.data?.list.map((cate, idx) => (
                                     <CateItemList
                                         key={ idx }
                                         to={{ pathname: '/memo', search: `?cate=${cate.id}` }}
@@ -69,7 +70,7 @@ export const Aside = () => {
                                     />
                                 ))}
                             </ul>
-                            <EditCategoryModal buttonText={ memoState.cate.list.length > 0 ? '카테고리 수정' : '카테고리 추가' }/>
+                            <EditCategoryModal buttonText={ getCategories.data?.list.length > 0 ? '카테고리 수정' : '카테고리 추가' }/>
                         </div>
                     </section>
                 </CustomScroller>

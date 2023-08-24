@@ -1,15 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../store';
 import {useForm} from 'react-hook-form';
 import {FuncButton} from '../../../common/components/FuncButton';
 import {useNavigate} from 'react-router-dom';
 import {api} from '../../../openapi/api';
-import {setUserReducer} from '../../../store/user/user.slice';
 import {PATTERNS} from '../../../common/constants';
-import {UpdateAccountInput} from '../../../openapi/generated';
+import {UpdateAccountInput, User} from '../../../openapi/generated';
 import {useToastsStore} from '../../../common/components/Toasts';
 import {VisibilityOffIcon, VisibilityOnIcon} from '../../../common/components/Icons';
+import {useQuery} from '@tanstack/react-query';
 
 export const EditProfilePage = () => {
     const { VALID_PASSWORD, INPUT_PASSWORD, EMAIL, INPUT_PHONE } = PATTERNS;
@@ -19,18 +17,18 @@ export const EditProfilePage = () => {
     const [occurError, setOccurError] = useState('');
     const [isRender, setIsRender] = useState(false);
 
-    const dispatch = useDispatch();
     const toastsStore = useToastsStore.getState();
     const navigate = useNavigate();
-    const userState = useSelector((state: RootState) => (state.user));
+    const getProfile = useQuery<User>(['user/getProfile'], { enabled: false });
+
 
     // 컴포넌트가 마운트 되었을 때 store에 저장된 유저데이터로 form에 셋팅한다.
     const form = useForm<UpdateAccountInput & { confirmPassword: string | null }>({
         mode: 'onChange',
         defaultValues: {
-            name: userState.data.name,
-            email: userState.data.email,
-            mobile: userState.data.mobile,
+            name: getProfile.data.name,
+            email: getProfile.data.email,
+            mobile: getProfile.data.mobile,
         },
     });
 
@@ -42,45 +40,44 @@ export const EditProfilePage = () => {
     const errorStyle = 'mt-[4px] text-red-500 text-[12px] font-normal h-[12px]';
 
     // 프로필 수정 submit 함수
-    const editProfileSubmit = form.handleSubmit(async () => {
+    const updateProfileSubmit = form.handleSubmit(async () => {
         const { email, password, name, mobile } = form.getValues();
-        const data = userState.data;
+        const data = getProfile.data;
 
         // 프로필에 변경사항이 없다면 요청하지 않고 이전 페이지로 이동 (일반적으로 이전페이지는 프로필페이지)
         if (data.name === name && data.email === email && data.mobile === mobile && password.length === 0) return navigate(-1);
 
         await api.user.updateProfile({ email, name, mobile, password })
-            .then((res) => {
+            .then(async (res) => {
                 if (res.data.success) {
-                    dispatch(setUserReducer({...userState, email, name, mobile }));
+                    await getProfile.refetch();
                     toastsStore.addToast('✔ 회원정보 수정이 완료되었습니다!');
+                    navigate(-1);
                 } else {
                     setOccurError(res.data.error);
                     toastsStore.addToast('❌ 회원정보 수정에 실패했습니다.');
                 }
             })
             .catch(e => console.log(e));
-
-        return navigate(-1);
     });
 
-    // 폼 초기화
-    useEffect(() => form.reset(), [form.reset, userState]);
-
     // 밑에서 위로 올라오는 애니메이션을 위한 컴포넌트 마운트시 state 변경
-    useEffect(() => setIsRender(true),[]);
+    useEffect(() => setIsRender(true), []);
 
-    return  !userState.loading &&
+    return  !getProfile.isLoading &&
         <div className='w-full min-h-[640px] md:min-h-[700px] h-full relative flex justify-center items-center overflow-hidden'>
             <form
-                onSubmit={ editProfileSubmit }
+                onSubmit={ updateProfileSubmit }
                 className={`flex flex-col justify-center relative bg-white text-start items-center shadow-2xl transition-all ease-in-out duration-500
                 md:gap-[16px] md:p-[20px] md:rounded-[16px] md:border md:border-gray-300 md:w-auto md:h-auto h-full w-full gap-[14px] px-[16px]
                 ${ isRender ? 'bottom-0' : '-bottom-full' }`}
             >
-                <h1 className='font-extrabold text-[24px] md:text-[30px] text-center'>
-                    프로필 변경
-                </h1>
+                <div className='relative font-extrabold text-[24px] md:text-[30px] w-full mb-[8px] md:mb-[20px] text-center md:text-start'>
+                    <p>프로필 변경</p>
+                    <p className='absolute text-[16px] md:text-[20px] text-red-500 font-bold translate-x-1/2 md:translate-x-0 right-1/2 md:right-[8px] md:bottom-0'>
+                        { occurError }
+                    </p>
+                </div>
                 <div className='md:w-auto w-full md:px-0'>
                     <h2 className={ subTitleStyle }>
                         이름
@@ -99,9 +96,6 @@ export const EditProfilePage = () => {
                     </p>
                 </div>
                 <div className='md:w-auto w-full md:px-0'>
-                    <p className='absolute -top-[20px] text-red-500 font-bold'>
-                        { occurError }
-                    </p>
                     <h2 className={ subTitleStyle }>
                         이메일
                         <span className='md:text-[14px] text-[12px] text-orange-400/80'>
@@ -228,7 +222,7 @@ export const EditProfilePage = () => {
                     options={{
                         text: '프로필 변경하기',
                         disabled: !form.formState.isValid,
-                        loading: userState.loading,
+                        loading: getProfile.isLoading,
                     }}
                     type='submit'
                     className='mt-[32px] w-full py-[8px] flex justify-center mb-[12px] cursor-pointer text-[18px] md:text-[22px] items-center bg-primary rounded-[16px] text-white'

@@ -39,7 +39,7 @@ export const Toasts = () => {
                     toastStore.removeToast();
                     show();
                 }, 300);
-            }, 3000);
+            }, 2000);
         } else {
             isRunRef.current = false;
         }
