@@ -116,7 +116,7 @@ export const memoSlice = createSlice({
             const input = meta.arg.input;
             if (data?.success) {
                 // refresh를 통해서 갱신, 스택 유형으로 업데이트
-                state.memo.offset = input.offset + data.list.length;
+                // state.memo.offset = input.offset + data.list.length;
                 state.memo.totalCount = data.totalCount;
                 state.memo.list = (refresh ? data.list : [ ...state.memo.list, ...data.list ])
                     .sort((a, b) => new Date(b.updateAt).valueOf() - new Date(a.updateAt).valueOf());

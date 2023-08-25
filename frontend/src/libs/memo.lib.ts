@@ -80,17 +80,17 @@ export const loadMemos = (refresh) => {
     const search = queryParams['search'];
 
     // refresh 여부에 따라 전체 데이터를 갱신 or 페이징 처리
-    if (!memoState.isLoading && (refresh || memoState.totalCount === -1 || memoState.offset < totCount)) {
-        store.dispatch(searchMemosAction({
-            input: {
-                // 검색어가 있다면 카테고리, 태그 미적용
-                cate: search ? undefined : cate,
-                tag: search ? undefined : tag,
-                search: search ? decodeURI(search) : undefined,
-                offset: refresh ? 0 : memoState.offset,
-                limit: refresh ? memoState.list.length : MEMO_LIST_REQUEST_LIMIT,
-            },
-            refresh
-        }));
-    }
+    // if (!memoState.isLoading && (refresh || memoState.totalCount === -1 || memoState.offset < totCount)) {
+    //     store.dispatch(searchMemosAction({
+    //         input: {
+    //             // 검색어가 있다면 카테고리, 태그 미적용
+    //             cate: search ? undefined : cate,
+    //             tag: search ? undefined : tag,
+    //             search: search ? decodeURI(search) : undefined,
+    //             offset: refresh ? 0 : memoState.offset,
+    //             limit: refresh ? memoState.list.length : MEMO_LIST_REQUEST_LIMIT,
+    //         },
+    //         refresh
+    //     }));
+    // }
 }

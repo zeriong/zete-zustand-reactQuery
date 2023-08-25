@@ -9,8 +9,9 @@ import {SearchMemo} from '../components/SearchMemo';
 import CustomScroller from '../../../common/components/customScroller';
 import {useWindowResize} from '../../../hooks/useWindowResize';
 import {useLayoutStore} from '../../../store/layoutStore';
-import {useQuery} from '@tanstack/react-query';
-import {GetCategoriesOutput, User} from '../../../openapi/generated';
+import {InfiniteData, useQuery} from '@tanstack/react-query';
+import {GetCategoriesOutput, SearchMemosOutput, User} from '../../../openapi/generated';
+import {queryClient} from '../../../index';
 
 export const MemoLayout = () => {
     const [searchParams] = useSearchParams();

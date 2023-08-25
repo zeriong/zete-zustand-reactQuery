@@ -9,7 +9,7 @@ export const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const authStore = useAuthStore();
-    const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false })
+    const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
 
     const openSignInModal = () => {
         searchParams.set('modal','sign-in');
