@@ -19,16 +19,16 @@ export const EditProfilePage = () => {
 
     const toastsStore = useToastsStore.getState();
     const navigate = useNavigate();
-    const getProfile = useQuery<User>(['user/getProfile'], { enabled: false });
+    const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
 
 
     // 컴포넌트가 마운트 되었을 때 store에 저장된 유저데이터로 form에 셋팅한다.
     const form = useForm<UpdateAccountInput & { confirmPassword: string | null }>({
         mode: 'onChange',
         defaultValues: {
-            name: getProfile.data.name,
-            email: getProfile.data.email,
-            mobile: getProfile.data.mobile,
+            name: getProfileQuery.data.name,
+            email: getProfileQuery.data.email,
+            mobile: getProfileQuery.data.mobile,
         },
     });
 
@@ -42,7 +42,7 @@ export const EditProfilePage = () => {
     // 프로필 수정 submit 함수
     const updateProfileSubmit = form.handleSubmit(async () => {
         const { email, password, name, mobile } = form.getValues();
-        const data = getProfile.data;
+        const data = getProfileQuery.data;
 
         // 프로필에 변경사항이 없다면 요청하지 않고 이전 페이지로 이동 (일반적으로 이전페이지는 프로필페이지)
         if (data.name === name && data.email === email && data.mobile === mobile && password.length === 0) return navigate(-1);
@@ -50,7 +50,7 @@ export const EditProfilePage = () => {
         await api.user.updateProfile({ email, name, mobile, password })
             .then(async (res) => {
                 if (res.data.success) {
-                    await getProfile.refetch();
+                    await getProfileQuery.refetch();
                     toastsStore.addToast('✔ 회원정보 수정이 완료되었습니다!');
                     navigate(-1);
                 } else {
@@ -64,7 +64,7 @@ export const EditProfilePage = () => {
     // 밑에서 위로 올라오는 애니메이션을 위한 컴포넌트 마운트시 state 변경
     useEffect(() => setIsRender(true), []);
 
-    return  !getProfile.isLoading &&
+    return  !getProfileQuery.isLoading &&
         <div className='w-full min-h-[640px] md:min-h-[700px] h-full relative flex justify-center items-center overflow-hidden'>
             <form
                 onSubmit={ updateProfileSubmit }
@@ -222,7 +222,7 @@ export const EditProfilePage = () => {
                     options={{
                         text: '프로필 변경하기',
                         disabled: !form.formState.isValid,
-                        loading: getProfile.isLoading,
+                        loading: getProfileQuery.isLoading,
                     }}
                     type='submit'
                     className='mt-[32px] w-full py-[8px] flex justify-center mb-[12px] cursor-pointer text-[18px] md:text-[22px] items-center bg-primary rounded-[16px] text-white'

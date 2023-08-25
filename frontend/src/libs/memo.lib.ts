@@ -39,7 +39,7 @@ export const addMemoTagSubmit = (event, form) => {
 }
 
 /** 이름 정렬 함수 */
-export const sortName = (list) => {
+export const sortByName = (list) => {
     list.sort((a, b) => a.name > b.name ? 1 : -1);
 }
 

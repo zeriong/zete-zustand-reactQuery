@@ -7,14 +7,14 @@ import {apiBundle} from './openapi/api';
 
 function App() {
     const authStore = useAuthStore();
-    const getProfile = useQuery(['user/getProfile'], apiBundle.user.getProfile, {
+    const getProfileQuery = useQuery(['user/getProfile'], apiBundle.user.getProfile, {
         retry: false,
         staleTime: Infinity,
     });
 
     return (
         <>
-            { (!authStore.loading || !getProfile.isLoading) && <Router/> }
+            { (!authStore.loading || !getProfileQuery.isLoading) && <Router/> }
             <Toasts/>
         </>
     )

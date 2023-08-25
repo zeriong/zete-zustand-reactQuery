@@ -14,7 +14,7 @@ export const HomeNav = ()=> {
 
     const layoutStore = useLayoutStore();
     const authStore = useAuthStore();
-    const getProfile = useQuery<User>(['user/getProfile'], { enabled: false });
+    const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
 
     const menuList: { name: string, to: string }[] = [
         { name: '서비스', to: '/service' },
@@ -54,7 +54,7 @@ export const HomeNav = ()=> {
             >
                 <div className='block md:hidden font-bold border-b border-b-gray-300 pb-[20px] pl-[8px]'>
                     <div className='text-xl mb-[8px] text-gray-700'>
-                        { authStore.isLoggedIn ? `${ getProfile.data?.name }님` : '로그인해주세요.' }
+                        { authStore.isLoggedIn ? `${ getProfileQuery.data?.name }님` : '로그인해주세요.' }
                     </div>
                     {authStore.isLoggedIn ? (
                         <>
@@ -116,7 +116,7 @@ export const HomeNav = ()=> {
             {authStore.isLoggedIn ? (
                 <section className='hidden md:flex flex-row items-center'>
                     <div className='text-[20px] font-bold text-gray-600 mr-[16px]'>
-                        { getProfile.data && `${ getProfile.data.name }님` }
+                        { getProfileQuery.data && `${ getProfileQuery.data.name }님` }
                     </div>
                     <Link
                         to='memo'

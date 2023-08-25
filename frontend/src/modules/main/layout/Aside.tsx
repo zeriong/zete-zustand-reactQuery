@@ -7,15 +7,15 @@ import {Tag} from '../../../openapi/generated';
 import {useLayoutStore} from '../../../store/layoutStore';
 import {useQuery} from '@tanstack/react-query';
 import {apiBundle} from '../../../openapi/api';
-import {sortName} from '../../../libs/memo.lib';
+import {sortByName} from '../../../libs/memo.lib';
 
 export const Aside = () => {
     const layoutStore = useLayoutStore();
 
-    const getCategories = useQuery(['memo/getCategories'], apiBundle.memo.getCategories, {
+    const getCategoriesQuery = useQuery(['memo/getCategories'], apiBundle.memo.getCategories, {
         retry: false,
         select: (data) => {
-            sortName(data.list);
+            sortByName(data.list);
             return data;
         },
     });
@@ -42,7 +42,7 @@ export const Aside = () => {
                                     cateName='전체메모'
                                     iconComponent={ AllIcon }
                                     iconClassName='mr-[14px] w-[20px]'
-                                    count={ getCategories.data?.totalMemoCount }
+                                    count={ getCategoriesQuery.data?.totalMemoCount }
                                 />
                                 <CateItemList
                                     to={{ pathname: '/memo', search: '?cate=important' }}
@@ -50,14 +50,14 @@ export const Aside = () => {
                                     cateName='중요메모'
                                     iconComponent={ StarIcon }
                                     iconClassName='mr-[14px] w-[20px]'
-                                    count={ getCategories.data?.importantMemoCount }
+                                    count={ getCategoriesQuery.data?.importantMemoCount }
                                 />
                             </ul>
                             <p className='text-dark/90 text-[11px] font-light pb-[14px] pt-[17px] pl-[12px]'>
                                 카테고리
                             </p>
                             <ul className='grid gap-[4px]'>
-                                {getCategories.data?.list.map((cate, idx) => (
+                                {getCategoriesQuery.data?.list.map((cate, idx) => (
                                     <CateItemList
                                         key={ idx }
                                         to={{ pathname: '/memo', search: `?cate=${cate.id}` }}
@@ -70,7 +70,7 @@ export const Aside = () => {
                                     />
                                 ))}
                             </ul>
-                            <EditCategoryModal buttonText={ getCategories.data?.list.length > 0 ? '카테고리 수정' : '카테고리 추가' }/>
+                            <EditCategoryModal buttonText={ getCategoriesQuery.data?.list.length > 0 ? '카테고리 수정' : '카테고리 추가' }/>
                         </div>
                     </section>
                 </CustomScroller>

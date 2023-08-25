@@ -21,7 +21,7 @@ export const SignInModal = () => {
     const navigate = useNavigate();
     const authStore = useAuthStore();
     const loginMutation = useMutation(apiBundle.auth.login);
-    const getProfile = useQuery<User>(['user/getProfile'], { enabled: false });
+    const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
 
     const form = useForm<LoginInput>({ mode: 'onChange' });
 
@@ -41,7 +41,7 @@ export const SignInModal = () => {
             onSuccess: async (data) => {
                 if (data.success) {
                     closeModal();
-                    await getProfile.refetch();
+                    await getProfileQuery.refetch();
                     authStore.setLogin(data.accessToken);
                     navigate('/memo');
                 } else {

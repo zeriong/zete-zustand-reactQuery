@@ -15,7 +15,7 @@ interface IMenuList {
 }
 
 export const UserProfileMenuPopover = () => {
-    const getProfile = useQuery<User>(['user/getProfile'], { enabled: false });
+    const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
 
     const menuList: IMenuList[] = [
         {
@@ -54,7 +54,7 @@ export const UserProfileMenuPopover = () => {
                     >
                         <Popover.Panel className='absolute mt-[12px] w-[160px] md:w-[180px] bg-white right-0 p-[12px] shadow-lg rounded-[8px] overflow-hidden border border-black/10'>
                             <h1 className='text-[18px] font-medium text-dark p-[4px] mb-[4px] cursor-default'>
-                                { getProfile.data?.name }
+                                { getProfileQuery.data?.name }
                             </h1>
                             {menuList.map((item) => (
                                 <Link

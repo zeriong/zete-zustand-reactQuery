@@ -13,7 +13,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
     const [createInputValue, setCreateInputValue] = useState('');
     const [updateInputValues, setUpdateInputValues] = useState<{ [key: number]: string }>({});
 
-    const getCategories = useQuery<GetCategoriesOutput>(['memo/getCategories'], { enabled: false })
+    const getCategoriesQuery = useQuery<GetCategoriesOutput>(['memo/getCategories'], { enabled: false })
     const createCategoryMutation = useMutation(apiBundle.memo.createCategory);
     const updateCategoryMutation = useMutation(apiBundle.memo.updateCategory);
     const deleteCategoryMutation = useMutation(apiBundle.memo.deleteCategory);
@@ -36,7 +36,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                 onSuccess: async (data) => {
                     //dispatch(createCategoryAction({ name: createInputValue })); // 카테고리 생성
                     if (data.success) {
-                        await getCategories.refetch();
+                        await getCategoriesQuery.refetch();
                         setCreateInputValue('');  // input 초기화
                     } else {
                         toastsStore.addToast('이미 존재하는 카테고리입니다.');
@@ -57,7 +57,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
         if (val && val.length > 1 && val !== originVal) {
             updateCategoryMutation.mutate({ id: id, name: val }, {
                 onSuccess: async (data) => {
-                    if (data.success) await getCategories.refetch();
+                    if (data.success) await getCategoriesQuery.refetch();
                     else {
                         // 업데이트 실패시 원래 값으로
                         input.value = originVal;
@@ -73,7 +73,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
     const deleteCategory = (memoId) => {
         deleteCategoryMutation.mutate({id: memoId}, {
             onSuccess: async (data) => {
-                if (data.success) await getCategories.refetch();
+                if (data.success) await getCategoriesQuery.refetch();
                 else console.log(data.error);
             },
             onError: (error) => console.log(error),
@@ -147,7 +147,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                                                     </button>
                                                 </form>
                                                 <ul className='text-dark/90 grid gap-[16px] pt-[20px]'>
-                                                    {getCategories.data?.list.map((memo, idx) => (
+                                                    {getCategoriesQuery.data?.list.map((memo, idx) => (
                                                         <li key={ idx }>
                                                             <form
                                                                 onSubmit={(event) => {
