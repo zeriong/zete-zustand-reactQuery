@@ -2,14 +2,13 @@ import React, {useEffect, useRef, useState} from 'react';
 import {UseFormReturn} from 'react-hook-form';
 import {api, apiBundle} from '../../../openapi/api';
 import CustomScroller from '../../../common/components/customScroller';
-import axios from 'axios';
+import axios, {CancelToken, CancelTokenSource} from 'axios';
 import {AutoResizeTextarea} from '../../../common/components/AutoResizeTextarea';
 import {useToastsStore} from '../../../common/components/Toasts';
 import {useMutation} from '@tanstack/react-query';
-import {CreateCompletionDto} from '../../../openapi/generated';
 
 export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) => {
-    const requestRef = useRef(null);
+    const axiosTokenRef = useRef<CancelTokenSource>(null);
 
     const [usableCount, setUsableCount] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -17,56 +16,30 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
     const [message, setMessage] = useState('');
     const [inputValue, setInputValue] = useState('');
 
-    const toastsStore = useToastsStore.getState();
+    const toastsStore = useToastsStore();
 
-    // requestRef.current = axios.CancelToken.source();
-    // const askAi = useMutation({
-    //     mutationFn: (variables: CreateCompletionDto) => {
-    //         return apiBundle.openAi.createCompletion(variables, { cancelToken: requestRef.current.token })
-    //     }
-    // });
+    // 요청중 취소 기능을 위한 fetch함수
+    const fetchAskAi = (input: { inputValue: string, axiosToken: CancelToken }) => {
+        return apiBundle.openAi.createCompletion({ content: input.inputValue }, { cancelToken: input.axiosToken });
+    }
 
+    const askAiMutation = useMutation(fetchAskAi);
+
+    // chat gpt 요청 함수
     const askAiSubmit = async (event) => {
         event.preventDefault();
 
-
+        // 질문횟수가 없거나, 내용을 2자 이내로 요청하면 toast를 띄우며 요청하지 않음
         if (usableCount <= 0) return toastsStore.addToast('질문가능 횟수가 초과하였습니다, 매일 자정이 지나면 충전됩니다.');
-
         if (!inputValue || inputValue.length < 2) return toastsStore.addToast('질문을 입력해 주시기 바랍니다.');
 
-        requestRef.current = axios.CancelToken.source();
         setIsLoading(true);
+        // 요청취소 기능을 위한 axios 토큰 소스
+        axiosTokenRef.current = axios.CancelToken.source();
 
-        // await askAi.mutateAsync({ content: inputValue }, {
-        //     onSuccess: (data) => {
-        //         if (data.success) {
-        //             // 사용자경험을 향상을 위해 요청을 받은 후 대기 시간동안 '답변이 거의 완성되었어요!' 문구를 띄움
-        //             setIsWaiting(true);
-        //
-        //             // gpt 3.5 turbo 무료 크레딧 특성상 요청이 매우느리고 연속요청에 에러를 발생시키기 때문에 요청에러방지,
-        //             setTimeout(() => {
-        //                 setIsWaiting(false);
-        //                 setIsLoading(false);
-        //             }, 5000);
-        //
-        //             if (data.gptResponse) {
-        //                 setUsableCount(data.usableCount);
-        //                 setMessage(data.gptResponse);
-        //             }
-        //         } else if (data?.error) {
-        //             toastsStore.addToast(data.error);
-        //             setIsLoading(false);
-        //         }
-        //     },
-        //     onError: (error) => {
-        //         toastsStore.addToast('GPT 답변 요청이 취소되었습니다.');
-        //         setIsLoading(false);
-        //     }
-        // })
-
-        api.openAi.createCompletion({ content: inputValue }, { cancelToken: requestRef.current.token })
-            .then((res) => {
-                if (res.data?.success) {
+        askAiMutation.mutate({ inputValue, axiosToken: axiosTokenRef.current.token }, {
+            onSuccess: (data) => {
+                if (data.success) {
                     // 사용자경험을 향상을 위해 요청을 받은 후 대기 시간동안 '답변이 거의 완성되었어요!' 문구를 띄움
                     setIsWaiting(true);
 
@@ -76,19 +49,20 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
                         setIsLoading(false);
                     }, 5000);
 
-                    if (res.data.gptResponse) {
-                        setUsableCount(res.data.usableCount);
-                        setMessage(res.data.gptResponse);
+                    if (data.gptResponse) {
+                        setUsableCount(data.usableCount);
+                        setMessage(data.gptResponse);
                     }
-                } else if (res.data?.error) {
-                    toastsStore.addToast(res.data.error);
+                } else if (data?.error) {
+                    toastsStore.addToast(data.error);
                     setIsLoading(false);
                 }
-            })
-            .catch(() => {
+            },
+            onError: () => {
                 toastsStore.addToast('GPT 답변 요청이 취소되었습니다.');
                 setIsLoading(false);
-            });
+            }
+        })
         setInputValue('');
     }
 
@@ -100,7 +74,7 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
             });
         } else {
             // 초기화
-            if (requestRef.current) requestRef.current.cancel();
+            if (axiosTokenRef.current) axiosTokenRef.current.cancel();
 
             // 응답받고 추가대기시간때도 알림을 띄움 (유저입장에선 똑같이 기다리는 상황이기 때문)
             if (isWaiting) toastsStore.addToast('GPT 답변 요청이 취소되었습니다.');
@@ -115,7 +89,7 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
     return (
         <section
             className={`flex flex-col transition-all duration-300 w-full bg-gpt/50 h-0 rounded-b-[8px] overflow-hidden z-50 shadow-2xl
-                ${ props.isShow && ' h-[400px] p-[10px]' }`}
+            ${ props.isShow && ' h-[400px] p-[10px]' }`}
         >
             <div className='flex flex-col w-full h-full'>
                 <div className='relative flex flex-col grow text-start text-dark bg-white/80 rounded-[8px] p-[8px]'>
@@ -164,7 +138,7 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
                                                 받지 못할 수 있어요.
                                             </li>
                                         </ol>
-                                        <h2 className='font-bold text-[13px] md:text-[15px]'>※ 참고사항</h2>
+                                        <p className='font-bold text-[13px] md:text-[15px]'>※ 참고사항</p>
                                         <ol className='list-decimal pl-[16px] font-medium text-[12px] md:text-[14px] grid gap-[6px] md:gap-[10px] leading-4'>
                                             <li>
                                                 GPT에게 질문 가능한 횟수는 계정당 하루에 <br className='xs:hidden'/><span className='bg-gpt/50 pl-[2px] pr-[3px]'>10회</span>가능합니다.
