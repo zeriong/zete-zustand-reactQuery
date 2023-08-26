@@ -39,7 +39,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
                 closeModal();
                 props.successControl(true);
             },
-            onError: (error) => setErrorMessage('잘못된 접근으로 에러가 발생했습니다.'),
+            onError: () => setErrorMessage('잘못된 접근으로 에러가 발생했습니다.'),
         });
     });
 

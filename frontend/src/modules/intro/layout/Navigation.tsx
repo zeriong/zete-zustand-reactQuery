@@ -1,20 +1,19 @@
 import {Link, useSearchParams} from 'react-router-dom';
 import React from 'react';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../store';
 import {HamburgerMenuIcon, LogoutIcon, ModifyIcon} from '../../../common/components/Icons';
 import {useLayoutStore} from '../../../store/layoutStore';
 import {useAuthStore} from '../../../store/authStore';
-import {logout} from '../../../libs/memo.lib';
 import {useQuery} from '@tanstack/react-query';
 import {User} from '../../../openapi/generated';
+import {logout} from '../../../libs/common.lib';
 
 export const HomeNav = ()=> {
     const [searchParams, setSearchParams] = useSearchParams();
 
+    const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
+
     const layoutStore = useLayoutStore();
     const authStore = useAuthStore();
-    const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
 
     const menuList: { name: string, to: string }[] = [
         { name: '서비스', to: '/service' },

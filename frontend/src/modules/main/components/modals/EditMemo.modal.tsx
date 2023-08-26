@@ -1,19 +1,16 @@
 import React, {Fragment, useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../../../store';
 import {useForm} from 'react-hook-form';
-import {Memo, UpdateMemoInput} from '../../../../openapi/generated';
+import {GetCategoriesOutput, Memo, UpdateMemoInput} from '../../../../openapi/generated';
 import {useSearchParams} from 'react-router-dom';
 import {Dialog, Transition} from '@headlessui/react';
 import {CategoryIcon, CloseIcon, FillStarIcon, PlusIcon, StarIcon} from '../../../../common/components/Icons';
-import {removeSpace} from '../../../../libs/common.lib';
-import {api} from '../../../../openapi/api';
+import {api, apiBundle} from '../../../../openapi/api';
 import {deleteMemoTag, addMemoTagSubmit, focusToContent, loadMemos} from '../../../../libs/memo.lib';
 import {HorizontalScroll} from '../../../../common/components/HorizontalScroll';
-import {updateMemoReducer} from '../../../../store/memo/memo.slice';
-import {getCategoriesAction} from '../../../../store/memo/memo.actions';
 import {AutoResizeInput} from '../../../../common/components/AutoResizeInput';
 import {useToastsStore} from '../../../../common/components/Toasts';
+import {useMemoStore} from '../../../../store/memoStore';
+import {useMutation, useQuery} from '@tanstack/react-query';
 
 export const EditMemoModal = () => {
     const savedMemoRef = useRef<Memo | null>(null);
@@ -26,92 +23,81 @@ export const EditMemoModal = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [isShow, setIsShow] = useState(false);
 
-    const dispatch = useDispatch<AppDispatch>();
-    const toastsStore = useToastsStore.getState();
-    const memoState = useSelector((state:RootState) => state.memo);
+    const getCategoriesQuery = useQuery<GetCategoriesOutput>(['memo/getCategories'], { enabled: false });
+
+    // getMemo이지만 patch를 통해 리소스를 주고받기 때문에 useMutation을 사용
+    const getMemoMutation = useMutation(apiBundle.memo.getMemo);
+
+    const updateMemoMutation = useMutation(apiBundle.memo.updateMemo);
+
+    const toastsStore = useToastsStore();
+    const memoStore = useMemoStore();
+
 
     const form = useForm<UpdateMemoInput>({ mode: 'onSubmit' });
-
-    // searchParams를 통한 메모수정 모달 컨트롤
-    useEffect(() => {
-        // 저장된 메모 클릭시 URL QueryParams가 view=memoId로 변경되기 때문에
-        // requestMemoIdRef에 id를 저장하여 업데이트할 메모를 요청할 때 사용한다.
-        requestMemoIdRef.current = Number(searchParams.get('view'));
-        if (requestMemoIdRef.current) {
-            form.reset();
-            setIsShow(true);
-            trySetModal();
-        } else {
-            setIsShow(false);
-        }
-    },[searchParams]);
 
     // 수정할 메모를 요청해서 받은 데이터를 기반으로 세팅
     const setModal = () => { 
         (async () =>{
-            // 메모를 받아오기 전까지 로딩상태를 유지하기 위함
+            // 메모를 받아오기 전까지 로딩상태를 유지
             isLoadingMemoRef.current = true;
 
-            const res = await api.memo.getMemo({ id: requestMemoIdRef.current });
-            if (res.data.success) {
-                const memo = res.data.memo;
-                // 인터넷환경이 좋지않아 지연로드 되는경우 잘못된 데이터가 세팅되는 것을 방지하기 위해
-                // 위 useEffect에서 URL QueryParams로 받은 id와 getMemo를 통해 서버에서 받은
-                // memo의 id가 일치하는 경우에만 폼을 해당 메모 내용으로 세팅해준다.
-                if (requestMemoIdRef.current === Number(res.data.memo.id)) {
-                    savedMemoRef.current = memo;
-                    form.setValue('title', memo.title || '');
-                    form.setValue('content', memo.content || '');
-                    form.setValue('cateId', Number(memo.cateId));
-                    form.setValue('tags', memo.tags);
-                    form.setValue('isImportant', memo.isImportant);
-                }
-            } else {
-                toastsStore.addToast('존재하지 않는 메모입니다.');
-                searchParams.delete('view');
-                setSearchParams(searchParams);
-                loadMemos(true);
-                dispatch(getCategoriesAction());
-            }
+            await getMemoMutation.mutateAsync({ id: requestMemoIdRef.current }, {
+                onSuccess: (data) => {
+                    if (data.success) {
+                        savedMemoRef.current = data.memo;
+                        form.setValue('title', data.memo.title || '');
+                        form.setValue('content', data.memo.content || '');
+                        form.setValue('cateId', Number(data.memo.cateId));
+                        form.setValue('tags', data.memo.tags);
+                        form.setValue('isImportant', data.memo.isImportant);
+                    } else {
+                        toastsStore.addToast('존재하지 않는 메모입니다.');
+                        searchParams.delete('view');
+                        setSearchParams(searchParams);
+                        loadMemos(true);
+                        getCategoriesQuery.refetch();
+                    }
+                },
+            })
             isLoadingMemoRef.current = false;
         })()
     }
 
     // 메모 수정 (auto 인자는 해당 함수를 자동저장인지 직접저장인지를 식별하는 용도)
-    const updateMemo = async (auto?) => {
+    const editMemo = async (auto?) => {
         clearTimeout(saveDelayTimerRef.current);
         saveDelayTimerRef.current = null;
         isSavingMemoRef.current = true;
 
         const data = form.getValues();
-        const targetMemo = memoState.memo.list.find(memo => memo.id === requestMemoIdRef.current);
+        const targetMemo = useMemoStore.getState().list.find(memo => memo.id === requestMemoIdRef.current);
         const diffTagLength = data.tags?.length === 0 ? 0 : targetMemo.tags.filter(tag => data.tags.some(formTag => formTag.name === tag.name)).length;
 
-        // 폼에 내부에 내용이 존재하지 않고 store에 저장된 메모의 내용들과
-        // useForm의 내용들을 비교하여 변경사항이 없다면 업데이트를 요청하지 않는다.
-        if (removeSpace(data.title).length === 0 && removeSpace(data.content).length === 0) {
-            // auto 인자를 전달받아 auto(자동저장인 경우)가 있는 경우라면 팝업알람을 띄우지 않지만
-            // 직접 배경을 눌러 update를 요청한 경우라면 팝업 알람을 띄워준다.
+        // useForm의 내용의 변경사항이 없거나 내용이 존재하지 않는다면 업데이트하지 않음
+        if (data.title.trim().length === 0 && data.content.trim().length === 0) {
+            // auto(자동저장인 경우)이면 toast 알림을 띄우지 않음
             if (auto) return;
             return toastsStore.addToast('입력내용이 존재하지 않아 마지막 내용을 저장합니다.');
         }
-        if (data.title === targetMemo.title && data.content === targetMemo.content && data.cateId === Number(targetMemo.cateId) &&
-            targetMemo.tags?.length === diffTagLength && targetMemo.isImportant === data.isImportant) return;
+
+        if (data?.title === targetMemo.title && data?.content === targetMemo.content && data?.cateId === Number(targetMemo.cateId) &&
+            targetMemo.tags?.length === diffTagLength && targetMemo.isImportant === data?.isImportant) return;
 
         // 변경사항이 존재하고 폼에 내용이 존재한다면 수정된 내용을 저장할 수 있도록 요청
-        try {
-            const res = await api.memo.updateMemo({ ...data, id: savedMemoRef.current.id });
-            if (res.data.success) savedMemoRef.current = res.data.savedMemo;
-            else toastsStore.addToast(res.data.error);
-        } catch (e) {
-            toastsStore.addToast('메모 수정에 실패하였습니다.');
-            loadMemos(true);
-        }
+        await updateMemoMutation.mutateAsync({ ...data, id: savedMemoRef.current.id }, {
+            onSuccess: (data) => {
+                if (data.success) savedMemoRef.current = data.savedMemo;
+                else toastsStore.addToast(data.error);
+            },
+            onError: () => {
+                toastsStore.addToast('메모 수정에 실패하였습니다.');
+                loadMemos(true);
+            }
+        })
 
-        // 메모수정에 필요한 모든 작업이 끝난 후 사이드 네비게이션에 내용도 최신화된 데이터로 갱신시켜 주고
-        // 저장 진행상태를 가지고 있던 isSavingMemoRef.current를 false로 변경하여
-        // tryUpdateMemo에서 updateMemo함수를 실행 가능하도록 만들어준다.
-        dispatch(getCategoriesAction());
+        // 카테고리리스트 최신화, 저장중 상태 false로 변경하여 접근 가능하도록 설정
+        getCategoriesQuery.refetch();
         isSavingMemoRef.current = false;
     }
 
@@ -137,7 +123,7 @@ export const EditMemoModal = () => {
     }
 
     // 메모 수정 시도
-    const tryUpdateMemo = () => {
+    const tryEditMemo = () => {
         // saveDelayTimerRef의 타임아웃이 진행중이라면 취소
         if (saveDelayTimerRef.current != null) {
             clearTimeout(saveDelayTimerRef.current);
@@ -146,8 +132,8 @@ export const EditMemoModal = () => {
         // 메모 수정중인 상태라면 연기
         if (saveDelayTimerRef.current == null) {
             saveDelayTimerRef.current = setTimeout(async () => {
-                if (isSavingMemoRef.current) tryUpdateMemo();  // 저장중이라면 연기
-                else await updateMemo(true);  // 저장
+                if (isSavingMemoRef.current) tryEditMemo();  // 저장중이라면 연기
+                else await editMemo(true);  // 저장
             }, 3000);
         }
     }
@@ -156,18 +142,32 @@ export const EditMemoModal = () => {
         searchParams.delete('view');
         setSearchParams(searchParams);
         if (savedMemoRef.current) {
-            await updateMemo();
-            dispatch(updateMemoReducer(savedMemoRef.current));
+            await editMemo();
+            memoStore.editMemo(savedMemoRef.current);
         }
         form.reset();
         savedMemoRef.current = null;
     }
 
+    // searchParams를 통한 메모수정 모달 컨트롤
+    useEffect(() => {
+        // 저장된 메모 클릭시 URL QueryParams가 view=memoId로 변경
+        // requestMemoIdRef에 id를 저장하여 업데이트할 메모를 요청할 때 사용
+        requestMemoIdRef.current = Number(searchParams.get('view'));
+        if (requestMemoIdRef.current) {
+            form.reset();
+            setIsShow(true);
+            trySetModal();
+        } else {
+            setIsShow(false);
+        }
+    },[searchParams]);
+
     // 폼 입력 감지하여 메모 업데이트
     useEffect(() => {
         const subscription = form.watch((data, { name, type }) => {
             // 특정 항목이 입력될 경우
-            if (name) tryUpdateMemo();
+            if (name) tryEditMemo();
         });
         return () => subscription.unsubscribe();
     }, [form.watch]);
@@ -292,7 +292,7 @@ export const EditMemoModal = () => {
                                                         <option value={0}>
                                                             전체메모
                                                         </option>
-                                                        {memoState.cate.list.map((cate, idx) => (
+                                                        {getCategoriesQuery.data?.list.map((cate, idx) => (
                                                             <option key={ idx } value={ cate.id }>
                                                                 { cate.name }
                                                             </option>

@@ -18,7 +18,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
     const updateCategoryMutation = useMutation(apiBundle.memo.updateCategory);
     const deleteCategoryMutation = useMutation(apiBundle.memo.deleteCategory);
 
-    const toastsStore = useToastsStore.getState();
+    const toastsStore = useToastsStore();
 
     const openModal = () => setIsShow(true);
 
@@ -29,12 +29,11 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
     }
 
     // 카테고리 생성 submit
-    const createCategorySubmit = (event) => {
+    const addCategorySubmit = (event) => {
         event.preventDefault();
         if (createInputValue) {
             createCategoryMutation.mutate({ name: createInputValue }, {
                 onSuccess: async (data) => {
-                    //dispatch(createCategoryAction({ name: createInputValue })); // 카테고리 생성
                     if (data.success) {
                         await getCategoriesQuery.refetch();
                         setCreateInputValue('');  // input 초기화
@@ -42,16 +41,13 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                         toastsStore.addToast('이미 존재하는 카테고리입니다.');
                     }
                 },
-                onError: (error) => {
-                    console.log(error);
-                    toastsStore.addToast('잘못된 접근입니다.');
-                }
+                onError: () => toastsStore.addToast('잘못된 접근입니다.'),
             })
         }
     }
 
     // 카테고리 업데이트 submit
-    const updateCategorySubmit = (id: number, originVal: string, input: any) => {
+    const editCategorySubmit = (id: number, originVal: string, input: any) => {
         const val = input.value;
         // 입력 값이 있고 기존 값과 다르다면
         if (val && val.length > 1 && val !== originVal) {
@@ -64,7 +60,6 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                         toastsStore.addToast(data.error);
                     }
                 },
-                onError: (error) => console.log(error),
             });
         }
     }
@@ -76,7 +71,6 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                 if (data.success) await getCategoriesQuery.refetch();
                 else console.log(data.error);
             },
-            onError: (error) => console.log(error),
         })
     }
 
@@ -129,7 +123,7 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                                             </h1>
                                             <div className='pt-[16px] px-[8px] text-[15px]'>
                                                 <form
-                                                    onSubmit={ createCategorySubmit }
+                                                    onSubmit={ addCategorySubmit }
                                                     className='flex items-center'
                                                 >
                                                     <ModifyIcon className='min-w-[22px] mr-[16px]'/>
@@ -153,11 +147,11 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                                                                 onSubmit={(event) => {
                                                                     event.preventDefault()
                                                                     const input = event.target[0];
-                                                                    updateCategorySubmit(memo.id, memo.name, input);
+                                                                    editCategorySubmit(memo.id, memo.name, input);
                                                                 }}
                                                                 onBlur={(event) => {
                                                                     const input = event.target;
-                                                                    updateCategorySubmit(memo.id, memo.name, input);
+                                                                    editCategorySubmit(memo.id, memo.name, input);
                                                                 }}
                                                                 className='flex items-center'
                                                             >

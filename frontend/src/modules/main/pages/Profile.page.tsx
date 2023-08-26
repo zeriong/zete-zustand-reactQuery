@@ -1,18 +1,17 @@
 import React, {useEffect} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../../store';
 import {Link} from 'react-router-dom';
-import {resetMemosReducer} from '../../../store/memo/memo.slice';
 import {useQuery} from '@tanstack/react-query';
 import {User} from '../../../openapi/generated';
+import {useMemoStore} from '../../../store/memoStore';
 
 export const ProfilePage = () => {
-    const dispatch = useDispatch<AppDispatch>();
     const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
+
+    const memoStore = useMemoStore();
 
     // 프로필 페이지로 이동시 list reset
     useEffect(() => {
-        dispatch(resetMemosReducer());
+        memoStore.resetMemos();
     },[]);
 
     return !getProfileQuery.isLoading &&

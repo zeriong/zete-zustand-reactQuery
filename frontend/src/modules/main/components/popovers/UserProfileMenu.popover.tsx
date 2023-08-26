@@ -3,9 +3,9 @@ import { Popover, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import {Link} from 'react-router-dom';
 import {LogoutIcon, ProfileIcon, UserIcon} from '../../../../common/components/Icons';
-import {logout} from '../../../../libs/memo.lib';
 import {useQuery} from '@tanstack/react-query';
 import {User} from '../../../../openapi/generated';
+import {logout} from '../../../../libs/common.lib';
 
 interface IMenuList {
     name: string;

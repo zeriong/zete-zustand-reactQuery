@@ -1,6 +1,4 @@
 import React, {useEffect, useMemo} from 'react';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../../store';
 import {Outlet, useSearchParams} from 'react-router-dom';
 import {Header} from './Header';
 import {Aside} from './Aside';
@@ -9,20 +7,17 @@ import {SearchMemo} from '../components/SearchMemo';
 import CustomScroller from '../../../common/components/customScroller';
 import {useWindowResize} from '../../../hooks/useWindowResize';
 import {useLayoutStore} from '../../../store/layoutStore';
-import {InfiniteData, useQuery} from '@tanstack/react-query';
-import {GetCategoriesOutput, SearchMemosOutput, User} from '../../../openapi/generated';
-import {queryClient} from '../../../index';
+import {useQuery} from '@tanstack/react-query';
+import {GetCategoriesOutput, User} from '../../../openapi/generated';
 
 export const MemoLayout = () => {
     const [searchParams] = useSearchParams();
 
-    const layoutStore = useLayoutStore();
-    // const { loading, data } = useSelector((state: RootState) => state.user);
-
     const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
     const getCategoriesQuery = useQuery<GetCategoriesOutput>(['memo/getCategories'], { enabled: false });
-
     const windowResize = useWindowResize();
+
+    const layoutStore = useLayoutStore();
 
     // useMemo를 통해서 URL QueryParams 변화에 따른 카테고리 이름을 알맞게 반환한다.
     const categoryName = useMemo(() => {
@@ -70,7 +65,6 @@ export const MemoLayout = () => {
                     <div className='w-full h-full bg-gray-100'>
                         <CustomScroller autoHide={ false }>
                             <Outlet/>
-                            {/*<div onClick={ () => window.scrollTo({ top: 0, behavior: 'smooth' }) } className='bg-red-500 text-white p-[20px] fixed right-[20px] bottom-[20px]' >test</div>*/}
                         </CustomScroller>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import {SearchIcon} from '../../../common/components/Icons';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {useSearchParams} from 'react-router-dom';
 import {useForm} from 'react-hook-form';
 import {useToastsStore} from '../../../common/components/Toasts';
@@ -7,9 +7,9 @@ import {useToastsStore} from '../../../common/components/Toasts';
 export const SearchMemo = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const toastsStore = useToastsStore.getState();
-
     const form = useForm<{ search?: string }>();
+
+    const toastsStore = useToastsStore();
 
     // 검색 내용을 URL QueryParams로 추가한다.
     const search = (text) => {
@@ -31,7 +31,9 @@ export const SearchMemo = () => {
     },[form.formState.errors.search]);
 
     // 카테고리, 태그변경 감지하여 검색 인풋 초기화
-    useEffect(() => form.reset(),[searchParams.get('cate'), searchParams.get('tag')])
+    useEffect(() => {
+        form.reset();
+    },[searchParams.get('cate'), searchParams.get('tag')])
 
     return (
         <form

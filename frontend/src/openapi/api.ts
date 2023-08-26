@@ -24,8 +24,8 @@ axiosInstance.interceptors.response.use((value: any) => value, async (error) => 
 
     // 권한 오류가 발생했고 재실행된(무한루프방지) 경우가 아니라면
     // 서버에 accessToken을 요청하고 서버는 요청을 받을때 헤더에 쿠키를 조회하고
-    // 서버에서 쿠키에 저장하는 jwt가 적용된 refreshToken이 존재하면 accessToken을 발급한다.
-    // 발급 이후에 아직 로그인상태가 아니기 때문에 retry하여 accessToken을 통해 로그인을 유지할 수 있다.
+    // 서버에서 쿠키에 저장하는 jwt가 적용된 refreshToken이 존재하면 accessToken을 발급.
+    // 발급 이후에 아직 로그인상태가 아니기 때문에 retry하여 accessToken을 통해 로그인을 유지함.
     if (error.response?.status === 401 && !originalConfig.retry) {
         const authStore = useAuthStore.getState();
         try {

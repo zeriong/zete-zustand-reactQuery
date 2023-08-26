@@ -1,4 +1,8 @@
 import css from 'dom-css';
+import {useAuthStore} from '../store/authStore';
+import {api} from '../openapi/api';
+import {useMemoStore} from '../store/memoStore';
+import {queryClient} from '../queryClient';
 
 /* --------------------------- 커스텀스크롤 function start ----------------------------- */
 export const getInnerHeight = (el: HTMLDivElement) => {
@@ -48,9 +52,6 @@ export const isIntegerString = (s?: string) => {
     return !isNaN(n) && Number.isInteger(n);
 }
 
-/** 공백 및 줄바꿈 제거함수 */
-export const removeSpace = (text = '') => text.replace(/\s*|\n/g,'');
-
 /** URL QueryParams 획득 함수 */
 export const getQueryParams = () => {
     const url = window.location.href;
@@ -64,4 +65,20 @@ export const getQueryParams = () => {
     }
 
     return queryParams;
+}
+
+/** 로그아웃 함수 */
+export const logout = () => {
+    const authStore = useAuthStore.getState();
+    const memoStore = useMemoStore.getState();
+    (async () => {
+        await api.auth.logout()
+            .then((res) => {
+                if (res.data.error) console.log(res.data.error);
+            })
+            .catch((e) => console.log(e));
+        authStore.setLogout();
+        queryClient.removeQueries(['user/getProfile']);
+        memoStore.resetMemos();
+    })()
 }

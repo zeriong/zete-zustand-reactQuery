@@ -2,12 +2,12 @@ import React, {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {FuncButton} from '../../../common/components/FuncButton';
 import {useNavigate} from 'react-router-dom';
-import {api} from '../../../openapi/api';
+import {api, apiBundle} from '../../../openapi/api';
 import {PATTERNS} from '../../../common/constants';
 import {UpdateAccountInput, User} from '../../../openapi/generated';
 import {useToastsStore} from '../../../common/components/Toasts';
 import {VisibilityOffIcon, VisibilityOnIcon} from '../../../common/components/Icons';
-import {useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 
 export const EditProfilePage = () => {
     const { VALID_PASSWORD, INPUT_PASSWORD, EMAIL, INPUT_PHONE } = PATTERNS;
@@ -17,10 +17,9 @@ export const EditProfilePage = () => {
     const [occurError, setOccurError] = useState('');
     const [isRender, setIsRender] = useState(false);
 
-    const toastsStore = useToastsStore.getState();
     const navigate = useNavigate();
     const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
-
+    const updateProfileMutation = useMutation(apiBundle.user.updateProfile);
 
     // 컴포넌트가 마운트 되었을 때 store에 저장된 유저데이터로 form에 셋팅한다.
     const form = useForm<UpdateAccountInput & { confirmPassword: string | null }>({
@@ -31,6 +30,8 @@ export const EditProfilePage = () => {
             mobile: getProfileQuery.data.mobile,
         },
     });
+
+    const toastsStore = useToastsStore();
 
     // jsx 태그의 복잡도를 낮추기 위해 반복되는 스타일 속성을
     // 유형별로 나누어 변수에 저장하여 적용
@@ -47,22 +48,24 @@ export const EditProfilePage = () => {
         // 프로필에 변경사항이 없다면 요청하지 않고 이전 페이지로 이동 (일반적으로 이전페이지는 프로필페이지)
         if (data.name === name && data.email === email && data.mobile === mobile && password.length === 0) return navigate(-1);
 
-        await api.user.updateProfile({ email, name, mobile, password })
-            .then(async (res) => {
-                if (res.data.success) {
+        updateProfileMutation.mutate({ email, name, mobile, password }, {
+            onSuccess: async (data) => {
+                if (data.success) {
                     await getProfileQuery.refetch();
                     toastsStore.addToast('✔ 회원정보 수정이 완료되었습니다!');
                     navigate(-1);
                 } else {
-                    setOccurError(res.data.error);
+                    setOccurError(data.error);
                     toastsStore.addToast('❌ 회원정보 수정에 실패했습니다.');
                 }
-            })
-            .catch(e => console.log(e));
+            },
+        });
     });
 
     // 밑에서 위로 올라오는 애니메이션을 위한 컴포넌트 마운트시 state 변경
-    useEffect(() => setIsRender(true), []);
+    useEffect(() => {
+        setIsRender(true);
+    }, []);
 
     return  !getProfileQuery.isLoading &&
         <div className='w-full min-h-[640px] md:min-h-[700px] h-full relative flex justify-center items-center overflow-hidden'>
@@ -79,9 +82,9 @@ export const EditProfilePage = () => {
                     </p>
                 </div>
                 <div className='md:w-auto w-full md:px-0'>
-                    <h2 className={ subTitleStyle }>
+                    <p className={ subTitleStyle }>
                         이름
-                    </h2>
+                    </p>
                     <input
                         {...form.register('name', {
                             required: true,
@@ -99,7 +102,7 @@ export const EditProfilePage = () => {
                     <h2 className={ subTitleStyle }>
                         이메일
                         <span className='md:text-[14px] text-[12px] text-orange-400/80'>
-                                &nbsp;(현계정에 등록된 이메일 외 중복이메일은 등록불가)
+                            &nbsp;(현계정에 등록된 이메일 외 중복이메일은 등록불가)
                         </span>
                     </h2>
                     <input
@@ -117,9 +120,9 @@ export const EditProfilePage = () => {
                     </p>
                 </div>
                 <div className='md:w-auto w-full md:px-0'>
-                    <h2 className={ subTitleStyle }>
+                    <p className={ subTitleStyle }>
                         휴대전화번호
-                    </h2>
+                    </p>
                     <input
                         {...form.register('mobile', {
                             required: true,
@@ -139,13 +142,13 @@ export const EditProfilePage = () => {
                         { form.formState.errors.mobile && '휴대전화번호를 입력해주세요.' }
                     </p>
                 </div>
-                <h2 className='text-center font-extrabold md:text-[18px] mt-[12px] text-[15px] text-gray-500'>
+                <p className='text-center font-extrabold md:text-[18px] mt-[12px] text-[15px] text-gray-500'>
                     { '< 비밀변호 변경은 필수입력 사항이 아닙니다. >' }
-                </h2>
+                </p>
                 <div className='w-full md:px-0'>
-                    <h2 className={ subTitleStyle }>
+                    <p className={ subTitleStyle }>
                         비밀번호 변경
-                    </h2>
+                    </p>
                     <div className='relative'>
                         <input
                             {...form.register('password', {
@@ -185,9 +188,9 @@ export const EditProfilePage = () => {
                             </div>
                         }
                     </div>
-                    <h2 className={ subTitleStyle }>
+                    <p className={ subTitleStyle }>
                         비밀번호 변경 재확인
-                    </h2>
+                    </p>
                     <div className='relative'>
                         <input
                             {...form.register('confirmPassword', {

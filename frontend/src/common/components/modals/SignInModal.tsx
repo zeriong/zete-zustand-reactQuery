@@ -49,7 +49,7 @@ export const SignInModal = () => {
                     setErrorMessage(data.error);
                 }
             },
-            onError: (error) => setErrorMessage('서버와 통신할 수 없습니다.'),
+            onError: () => setErrorMessage('서버와 통신할 수 없습니다.'),
         });
     });
 

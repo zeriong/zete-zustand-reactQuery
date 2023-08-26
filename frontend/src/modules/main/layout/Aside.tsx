@@ -7,18 +7,17 @@ import {Tag} from '../../../openapi/generated';
 import {useLayoutStore} from '../../../store/layoutStore';
 import {useQuery} from '@tanstack/react-query';
 import {apiBundle} from '../../../openapi/api';
-import {sortByName} from '../../../libs/memo.lib';
 
 export const Aside = () => {
-    const layoutStore = useLayoutStore();
-
     const getCategoriesQuery = useQuery(['memo/getCategories'], apiBundle.memo.getCategories, {
         retry: false,
         select: (data) => {
-            sortByName(data.list);
+            data.list.sort((a, b) => a.name > b.name ? 1 : -1);
             return data;
         },
     });
+
+    const layoutStore = useLayoutStore();
 
     return (
         <>

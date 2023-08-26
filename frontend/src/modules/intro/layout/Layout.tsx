@@ -11,8 +11,9 @@ import {useLayoutStore} from '../../../store/layoutStore';
 export const HomeLayout = () => {
     const [modalControl, setModalControl] = useState(false);
 
-    const layoutStore = useLayoutStore()
     const windowResize = useWindowResize();
+
+    const layoutStore = useLayoutStore()
 
     // 브라우저사이즈 변화에 따른 사이드 네비게이션 활성화
     useEffect(() => {
