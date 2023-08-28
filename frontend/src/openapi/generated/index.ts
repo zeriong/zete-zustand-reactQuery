@@ -20,32 +20,14 @@ export * from "./model";
 import {AxiosInstance} from "axios";
 
 
-    import { AuthApiFactory } from "./api/auth-api";
     import { AuthApiDataFactory } from "./api/auth-api";
 
-    import { MemoApiFactory } from "./api/memo-api";
     import { MemoApiDataFactory } from "./api/memo-api";
 
-    import { OpenAiApiFactory } from "./api/open-ai-api";
     import { OpenAiApiDataFactory } from "./api/open-ai-api";
 
-    import { UserApiFactory } from "./api/user-api";
     import { UserApiDataFactory } from "./api/user-api";
 
-
-export const exportApiFactory = (axios: AxiosInstance) => {
-return {
-
-    auth: AuthApiFactory(undefined, '', axios),
-
-    memo: MemoApiFactory(undefined, '', axios),
-
-    openAi: OpenAiApiFactory(undefined, '', axios),
-
-    user: UserApiFactory(undefined, '', axios),
-
-}
-}
 
 export const exportApiDataFactory = (axios: AxiosInstance) => {
 return {

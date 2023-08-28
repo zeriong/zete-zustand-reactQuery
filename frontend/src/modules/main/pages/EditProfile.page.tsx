@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {FuncButton} from '../../../common/components/FuncButton';
 import {useNavigate} from 'react-router-dom';
-import {api, apiBundle} from '../../../openapi/api';
+import {apiBundle} from '../../../openapi/api';
 import {PATTERNS} from '../../../common/constants';
 import {UpdateAccountInput, User} from '../../../openapi/generated';
 import {useToastsStore} from '../../../common/components/Toasts';

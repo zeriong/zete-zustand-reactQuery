@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {UseFormReturn} from 'react-hook-form';
-import {api, apiBundle} from '../../../openapi/api';
+import {apiBundle} from '../../../openapi/api';
 import CustomScroller from '../../../common/components/customScroller';
 import axios, {CancelToken, CancelTokenSource} from 'axios';
 import {AutoResizeTextarea} from '../../../common/components/AutoResizeTextarea';
@@ -69,8 +69,8 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
     useEffect(() => {
         if (props.isShow) {
             // ai 질문 모드로 전환시 질문 가능 횟수 로드
-            api.user.getGptUsableCount().then((res) => {
-                if (res.data?.success) setUsableCount(res.data.count);
+            apiBundle.user.getGptUsableCount().then((res) => {
+                if (res?.success) setUsableCount(res.count);
             });
         } else {
             // 초기화

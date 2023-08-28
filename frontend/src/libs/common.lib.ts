@@ -1,6 +1,6 @@
 import css from 'dom-css';
 import {useAuthStore} from '../store/authStore';
-import {api} from '../openapi/api';
+import {apiBundle} from '../openapi/api';
 import {useMemoStore} from '../store/memoStore';
 import {queryClient} from '../queryClient';
 
@@ -72,9 +72,9 @@ export const logout = () => {
     const authStore = useAuthStore.getState();
     const memoStore = useMemoStore.getState();
     (async () => {
-        await api.auth.logout()
+        await apiBundle.auth.logout()
             .then((res) => {
-                if (res.data.error) console.log(res.data.error);
+                if (res.error) console.log(res.error);
             })
             .catch((e) => console.log(e));
         authStore.setLogout();

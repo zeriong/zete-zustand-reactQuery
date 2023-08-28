@@ -8,7 +8,7 @@ interface ILayoutStore {
 
 /** sideNav의 상태관리 store */
 export const useLayoutStore = create<ILayoutStore>() ((setState) => ({
-    isShowSideNav: true,
+    isShowSideNav: false,
     toggleSideNav: () => setState((state) => ({ isShowSideNav: !state.isShowSideNav })),
     setShowSideNav: (isShow) => setState(() => ({ isShowSideNav: isShow })),
 }))

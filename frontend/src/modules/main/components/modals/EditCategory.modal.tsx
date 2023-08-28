@@ -47,16 +47,15 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
     }
 
     // 카테고리 업데이트 submit
-    const editCategorySubmit = (id: number, originVal: string, input: any) => {
-        const val = input.value;
+    const editCategory = (id: number, originVal: string, value: string) => {
         // 입력 값이 있고 기존 값과 다르다면
-        if (val && val.length > 1 && val !== originVal) {
-            updateCategoryMutation.mutate({ id: id, name: val }, {
+        if (value && value.length > 1 && value !== originVal) {
+            updateCategoryMutation.mutate({ id: id, name: value }, {
                 onSuccess: async (data) => {
                     if (data.success) await getCategoriesQuery.refetch();
                     else {
                         // 업데이트 실패시 원래 값으로
-                        input.value = originVal;
+                        value = originVal;
                         toastsStore.addToast(data.error);
                     }
                 },
@@ -141,17 +140,17 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
                                                     </button>
                                                 </form>
                                                 <ul className='text-dark/90 grid gap-[16px] pt-[20px]'>
-                                                    {getCategoriesQuery.data?.list.map((memo, idx) => (
+                                                    {getCategoriesQuery.data?.list?.map((memo, idx) => (
                                                         <li key={ idx }>
                                                             <form
                                                                 onSubmit={(event) => {
                                                                     event.preventDefault()
-                                                                    const input = event.target[0];
-                                                                    editCategorySubmit(memo.id, memo.name, input);
+                                                                    const value = event.target[0].value;
+                                                                    editCategory(memo.id, memo.name, value);
                                                                 }}
                                                                 onBlur={(event) => {
-                                                                    const input = event.target;
-                                                                    editCategorySubmit(memo.id, memo.name, input);
+                                                                    const value = event.target.value;
+                                                                    editCategory(memo.id, memo.name, value);
                                                                 }}
                                                                 className='flex items-center'
                                                             >

@@ -1,6 +1,6 @@
 import {getQueryParams, isIntegerString} from './common.lib';
 import {MEMO_LIST_REQUEST_LIMIT} from '../common/constants';
-import {api} from '../openapi/api';
+import {apiBundle} from '../openapi/api';
 import {useToastsStore} from '../common/components/Toasts';
 import {useMemoStore} from '../store/memoStore';
 
@@ -60,8 +60,8 @@ export const loadMemos = (refresh) => {
             offset: refresh ? 0 : memoStore.offset,
             limit: refresh ? memoStore.list.length : MEMO_LIST_REQUEST_LIMIT,
         }
-        api.memo.searchMemos(input)
-            .then(res => memoStore.addMemoList(res.data, input.offset, refresh))
+        apiBundle.memo.searchMemos(input)
+            .then(res => memoStore.addMemoList(res.list, input.offset, res.totalCount, refresh))
             .catch(e => console.log(e));
     }
 }

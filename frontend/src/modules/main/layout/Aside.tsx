@@ -10,7 +10,6 @@ import {apiBundle} from '../../../openapi/api';
 
 export const Aside = () => {
     const getCategoriesQuery = useQuery(['memo/getCategories'], apiBundle.memo.getCategories, {
-        retry: false,
         select: (data) => {
             data.list.sort((a, b) => a.name > b.name ? 1 : -1);
             return data;
@@ -56,7 +55,7 @@ export const Aside = () => {
                                 카테고리
                             </p>
                             <ul className='grid gap-[4px]'>
-                                {getCategoriesQuery.data?.list.map((cate, idx) => (
+                                {getCategoriesQuery.data?.list?.map((cate, idx) => (
                                     <CateItemList
                                         key={ idx }
                                         to={{ pathname: '/memo', search: `?cate=${cate.id}` }}
@@ -69,7 +68,7 @@ export const Aside = () => {
                                     />
                                 ))}
                             </ul>
-                            <EditCategoryModal buttonText={ getCategoriesQuery.data?.list.length > 0 ? '카테고리 수정' : '카테고리 추가' }/>
+                            <EditCategoryModal buttonText={ getCategoriesQuery.data?.list?.length > 0 ? '카테고리 수정' : '카테고리 추가' }/>
                         </div>
                     </section>
                 </CustomScroller>

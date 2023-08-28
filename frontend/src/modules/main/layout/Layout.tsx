@@ -25,7 +25,7 @@ export const MemoLayout = () => {
         if (!cate) return '전체메모';
         else if (cate === 'important') return '중요메모';
         else {
-            const matchCate = getCategoriesQuery.data?.list.find((cate) => Number(cate.id) === Number(searchParams.get('cate')))?.name;
+            const matchCate = getCategoriesQuery.data?.list?.find((cate) => Number(cate.id) === Number(searchParams.get('cate')))?.name;
             if (matchCate) return matchCate;
             return '카테고리가 존재하지않습니다.';
         }

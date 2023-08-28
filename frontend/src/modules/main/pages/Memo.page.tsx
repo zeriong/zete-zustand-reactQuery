@@ -53,7 +53,6 @@ export const MemoPage = () => {
             (async () => {
                 // 메모리스트 초기화
                 memoStore.resetMemos();
-                // await loadMemos(false);
             })()
         }
     },[searchParams.get('cate'), searchParams.get('tag'), searchParams.get('search')]);

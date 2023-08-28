@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {Memo, SearchMemosOutput} from '../openapi/generated';
+import {Memo} from '../openapi/generated';
 
 interface IMemoStore {
     offset?: number;
@@ -8,7 +8,7 @@ interface IMemoStore {
     isLoading: boolean;
     resetMemos: () => void;
     addMemo: (memo: Memo) => void;
-    addMemoList: (resData: SearchMemosOutput, reqOffset: number, refresh: boolean) => void;
+    addMemoList: (list: Memo[], offset: number, totalCount: number, refresh: boolean) => void;
     editMemo: (memo: Memo) => void;
     deleteMemo: (memoId: number) => void;
     changeImportant: (memoId: number) => void;
@@ -31,11 +31,11 @@ export const useMemoStore = create<IMemoStore>() ((setState) => ({
         list: sortByUpdateAt([...state.list, memo]),
         offset: state.offset + 1,
     })),
-    addMemoList: (resData, reqOffset, refresh) => setState((state) => ({
-        offset: reqOffset + resData.list.length,
-        totalCount: resData.totalCount,
+    addMemoList: (list, offset, totalCount, refresh) => setState((state) => ({
+        offset: offset + list.length,
+        totalCount: totalCount,
         isLoading: false,
-        list: refresh ? resData.list : sortByUpdateAt([ ...state.list, ...resData.list ]),
+        list: refresh ? list : sortByUpdateAt([...state.list, ...list]),
     })),
     editMemo: (editedMemo) => setState((state) => ({
         list: sortByUpdateAt(

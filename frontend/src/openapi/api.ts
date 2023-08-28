@@ -1,4 +1,4 @@
-import {exportApiDataFactory, exportApiFactory} from './generated';
+import {exportApiDataFactory} from './generated';
 import {API_URL} from '../common/constants';
 import {useAuthStore} from '../store/authStore';
 import axios, {InternalAxiosRequestConfig} from 'axios';
@@ -29,9 +29,9 @@ axiosInstance.interceptors.response.use((value: any) => value, async (error) => 
     if (error.response?.status === 401 && !originalConfig.retry) {
         const authStore = useAuthStore.getState();
         try {
-            const result = await api.auth.refreshToken();
-            if (result.data?.success && result.data?.accessToken) {
-                const token = result.data.accessToken;
+            const result = await apiBundle.auth.refreshToken();
+            if (result?.success && result?.accessToken) {
+                const token = result.accessToken;
                 authStore.setLogin(token);
 
                 originalConfig.headers['Authorization'] = `Bearer ${ authStore.accessToken }`;
@@ -57,6 +57,4 @@ axiosInstance.interceptors.request.use(
 );
 
 /** OpenAPI Autogen Ajax 매서드 */
-export const api = exportApiFactory(axiosInstance);
-
 export const apiBundle = exportApiDataFactory(axiosInstance);

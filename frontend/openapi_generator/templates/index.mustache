@@ -13,14 +13,6 @@ import {AxiosInstance} from "axios";
     import { {{classname}}DataFactory } from "./api/{{classFilename}}";
 {{/apis}}{{/apiInfo}}
 
-export const exportApiFactory = (axios: AxiosInstance) => {
-return {
-{{#apiInfo}}{{#apis}}
-    {{classVarName}}: {{classname}}Factory(undefined, '', axios),
-{{/apis}}{{/apiInfo}}
-}
-}
-
 export const exportApiDataFactory = (axios: AxiosInstance) => {
 return {
 {{#apiInfo}}{{#apis}}

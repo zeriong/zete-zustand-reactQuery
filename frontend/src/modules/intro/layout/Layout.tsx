@@ -19,8 +19,13 @@ export const HomeLayout = () => {
     useEffect(() => {
         if (windowResize.width > 767) {
             if (layoutStore.isShowSideNav) layoutStore.setShowSideNav(false);
+
         }
     },[windowResize]);
+
+    useEffect(() => {
+        layoutStore.setShowSideNav(false);
+    },[])
 
     return (
         <>

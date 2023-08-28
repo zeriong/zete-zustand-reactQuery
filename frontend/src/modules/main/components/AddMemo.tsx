@@ -287,7 +287,7 @@ export const AddMemo = () => {
                                             <option value={ 0 }>
                                                 전체메모
                                             </option>
-                                            {getCategoriesQuery.data.list.map((cate, idx) => (
+                                            {getCategoriesQuery.data?.list?.map((cate, idx) => (
                                                 <option key={ idx } value={ cate.id }>
                                                     { cate.name }
                                                 </option>

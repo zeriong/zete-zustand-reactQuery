@@ -4,7 +4,7 @@ import {GetCategoriesOutput, Memo, UpdateMemoInput} from '../../../../openapi/ge
 import {useSearchParams} from 'react-router-dom';
 import {Dialog, Transition} from '@headlessui/react';
 import {CategoryIcon, CloseIcon, FillStarIcon, PlusIcon, StarIcon} from '../../../../common/components/Icons';
-import {api, apiBundle} from '../../../../openapi/api';
+import {apiBundle} from '../../../../openapi/api';
 import {deleteMemoTag, addMemoTagSubmit, focusToContent, loadMemos} from '../../../../libs/memo.lib';
 import {HorizontalScroll} from '../../../../common/components/HorizontalScroll';
 import {AutoResizeInput} from '../../../../common/components/AutoResizeInput';
@@ -33,11 +33,10 @@ export const EditMemoModal = () => {
     const toastsStore = useToastsStore();
     const memoStore = useMemoStore();
 
-
     const form = useForm<UpdateMemoInput>({ mode: 'onSubmit' });
 
     // 수정할 메모를 요청해서 받은 데이터를 기반으로 세팅
-    const setModal = () => { 
+    const setModal = () => {
         (async () =>{
             // 메모를 받아오기 전까지 로딩상태를 유지
             isLoadingMemoRef.current = true;
@@ -292,7 +291,7 @@ export const EditMemoModal = () => {
                                                         <option value={0}>
                                                             전체메모
                                                         </option>
-                                                        {getCategoriesQuery.data?.list.map((cate, idx) => (
+                                                        {getCategoriesQuery.data?.list?.map((cate, idx) => (
                                                             <option key={ idx } value={ cate.id }>
                                                                 { cate.name }
                                                             </option>
