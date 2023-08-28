@@ -32,6 +32,7 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
     // chat gpt 요청 함수
     const askAiSubmit = async (event) => {
         event.preventDefault();
+        layoutCustomScroller.current.scrollTop();
 
         // 질문횟수가 없거나, 내용을 2자 이내로 요청하면 toast를 띄우며 요청하지 않음
         if (usableCount <= 0) return toastsStore.addToast('질문가능 횟수가 초과하였습니다, 매일 자정이 지나면 충전됩니다.');

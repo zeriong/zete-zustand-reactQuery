@@ -39,7 +39,7 @@ export const Toasts = () => {
                     toastStore.removeToast();
                     show();
                 }, 300);
-            }, 2000);
+            }, 2500);
         } else {
             isRunRef.current = false;
         }
@@ -50,11 +50,11 @@ export const Toasts = () => {
     }, [toastStore.toasts]);
 
     return (
-        <div className={`fixed flex items-center justify-center z-[99999] left-[26px] bg-black/90 rounded duration-300 ease-in-out ${ isShow ? 'bottom-[26px] opacity-100' : 'opacity-0 bottom-0' }`}>
+        <div className={`fixed max-md:w-full flex items-center justify-center z-[99999] left-1/2 max-md:-translate-x-1/2 md:left-[26px] bg-black/90 md:rounded duration-300 ease-in-out ${ isShow ? 'bottom-[26px] opacity-100' : 'opacity-0 bottom-0' }`}>
             {toastStore.toasts.length > 0 && (
-                <div className='flex p-[18px]'>
+                <div className='flex p-[10px] md:p-[18px]'>
                     <AlarmIcon className='fill-white h-[22px] mr-[6px]'/>
-                    <p className='w-full font-normal text-white' dangerouslySetInnerHTML={{ __html: toastStore.toasts[0]}}/>
+                    <p className='w-full font-normal text-white max-md:text-[14px]' dangerouslySetInnerHTML={{ __html: toastStore.toasts[0]}}/>
                 </div>
             )}
         </div>
