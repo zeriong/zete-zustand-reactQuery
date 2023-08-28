@@ -25,6 +25,7 @@ import {useMemoStore} from '../../../store/memoStore';
 export const MemoPage = () => {
     const observerRef = useRef<IntersectionObserver>(null);
     const loaderRef = useRef<HTMLDivElement>(null);
+    const memoSectionRef = useRef<HTMLElement>(null);
 
     const [searchParams] = useSearchParams();
     const [masonryCols] = useState({
@@ -78,10 +79,10 @@ export const MemoPage = () => {
 
     return (
         <>
-            <section className='relative top-0 gap-[28px] w-full p-[16px] pt-[60px] md:p-[30px]'>
+            <section ref={ memoSectionRef } className='relative top-0 gap-[28px] w-full p-[16px] md:p-[30px] h-[calc(100%-46px)]'>
                 {searchParams.get('cate') !== 'important' && (
                     <div className='relative flex justify-center mt-[6px] mb-[22px] md:mb-[30px] md:mt-0'>
-                        <AddMemo/>
+                        <AddMemo memoSection={ memoSectionRef }/>
                     </div>
                 )}
                 <Masonry
@@ -93,7 +94,7 @@ export const MemoPage = () => {
                 </Masonry>
                 <EditMemoModal/>
                 <div className='relative'>
-                    <div ref={ loaderRef } className='absolute left-0 -top-[150px] w-[1px] h-[150px]'/>
+                    <div ref={ loaderRef } className='absolute left-0 -top-[150px] w-[1px] h-[200px]'/>
                 </div>
             </section>
         </>

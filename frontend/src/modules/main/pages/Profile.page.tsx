@@ -16,8 +16,8 @@ export const ProfilePage = () => {
 
     return !getProfileQuery.isLoading &&
         <section
-            className='relative gap-[26px] flex flex-col items-center justify-between md:justify-normal top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 p-[26px] text-start md:rounded-[12px]
-                w-full md:w-fit bg-white h-full md:h-fit md:border md:border-gray-200 md:shadow-lg'
+            className='relative gap-[26px] flex flex-col items-center justify-between md:justify-normal p-[26px] text-start md:rounded-[12px] md:top-[calc(50%-46px)] md:-translate-y-1/2 md:left-1/2 md:-translate-x-1/2
+                w-full md:w-fit bg-white h-[calc(100%-46px)] md:h-fit md:border md:border-gray-200 md:shadow-lg'
         >
             <div className='flex flex-col items-center gap-[26px]'>
                 <h1 className='text-[30px] font-extrabold border-b-2 border-gray-400 px-[16px] md:px-[20px]'>

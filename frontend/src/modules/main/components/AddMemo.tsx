@@ -1,5 +1,5 @@
 import {CategoryIcon, CloseIcon, FillStarIcon, PlusIcon, StarIcon} from '../../../common/components/Icons';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {MutableRefObject, useEffect, useRef, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {CreateMemoInput, GetCategoriesOutput, Memo} from '../../../openapi/generated';
 import {useSearchParams} from 'react-router-dom';
@@ -14,12 +14,13 @@ import {useToastsStore} from '../../../common/components/Toasts';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {useMemoStore} from '../../../store/memoStore';
 
-export const AddMemo = () => {
+export const AddMemo = (props: { memoSection: MutableRefObject<HTMLElement> }) => {
     const panelRef = useRef<HTMLDivElement>(null);
     const savedMemoRef = useRef<Memo | null>(null);
     const saveDelayTimerRef = useRef<NodeJS.Timeout | null>(null);
     const isSavingMemoRef = useRef(false);
     const isCancelMemoRef = useRef(false);
+    const mobileEditBackground = useRef<HTMLDivElement>(null);
 
     const [searchParams] = useSearchParams();
     const [formMode, setFormMode] = useState<'idle' | 'edit' | 'askAI'>('idle');
@@ -154,7 +155,18 @@ export const AddMemo = () => {
             if (!isCancelMemoRef.current) resetForm();
             else isCancelMemoRef.current = false;
         }
+        // 모바일환경에서 idle일때 저장 가능하도록 스타일 지정
+        if (props.memoSection.current && (formMode === 'askAI' || formMode === 'edit')) {
+            mobileEditBackground.current.style.height = `${props.memoSection.current.scrollHeight}px`;
+        }
     }, [formMode]);
+
+    // 모바일환경에서 idle일때 저장 가능하도록 스타일 지정
+    useEffect(() => {
+        if (props.memoSection.current) {
+            mobileEditBackground.current.style.height = `${props.memoSection.current.scrollHeight}px`;
+        }
+    }, [props.memoSection.current?.scrollHeight]);
 
     useEffect(() => {
         // url 변경시 변경된 카테고리 아이디 지정
@@ -164,19 +176,21 @@ export const AddMemo = () => {
 
     return (
         <>
+            {/*모바일환경 블러 백그라운드*/}
             <div
+                ref={ mobileEditBackground }
                 onTouchStart={ (e) => e.stopPropagation() }
-                className={`block md:hidden fixed w-full top-[91px] left-0 z-[25] bg-gradient-to-b
-                ${formMode === 'edit' || formMode === 'askAI' ? 'h-full backdrop-blur' : 'h-[90px] backdrop-blur-sm'}`}
+                className={`md:hidden absolute w-full top-[91px] left-0 z-[25] bg-gradient-to-b
+                ${formMode === 'edit' || formMode === 'askAI' ? 'backdrop-blur'  : 'hidden'}`}
             />
             <article
                 ref={ panelRef }
                 id='add_memo_panel'
-                className='fixed md:relative w-[calc(100%-32px)] md:w-full max-w-[500px] z-[25] top-[109px] md:top-0'
+                className='relative w-full max-w-[500px] z-[25]'
             >
                 <section
                     className={`flex flex-col transition-all duration-300 px-[18px] pb-[10px] pt-[12px]
-                    ${formMode === 'askAI' ? 'rounded-t-[8px] bg-white border-t-[10px] border-x-[10px] border-gpt/50'
+                    ${formMode === 'askAI' ? 'rounded-t-[8px] bg-white border-t-[10px] border-x-[10px] border-gpt/50 px-[9px] pb-[8px] pt-[4px]'
                     : 'border border-gray-300/80 rounded-[8px] bg-memo memo-shadow'}`}
                 >
                     <form onSubmit={ focusToContent } className='w-full'>
@@ -233,7 +247,7 @@ export const AddMemo = () => {
                                     </button>
                                     <button
                                         type='button'
-                                        className={`block md:hidden text-[12px] rounded-[8px] font-normal text-white border-2 border-gpt/80 bg-gpt py-[4px] px-[8px] whitespace-nowrap`}
+                                        className='block md:hidden text-[12px] rounded-[8px] font-normal text-white border-2 border-gpt/80 bg-gpt py-[3px] md:py-[4px] px-[7px] md:px-[8px] whitespace-nowrap ml-[10px] md:ml-[20px]'
                                         onClick={ () => setFormMode('askAI') }
                                     >
                                         GPT
@@ -278,11 +292,11 @@ export const AddMemo = () => {
                             </HorizontalScroll>
                             <div className='relative flex justify-between items-center pt-[10px]'>
                                 <div className='flex items-center'>
-                                    <div className='flex items-center border border-gray-300/90 rounded-md px-[8px] py-[4px]'>
-                                        <CategoryIcon className='w-[18px] opacity-75 mr-0.5'/>
+                                    <div className='flex items-center border border-gray-300/90 rounded-md px-[7px] md:px-[8px] py-[3px] md:py-[4px]'>
+                                        <CategoryIcon className='w-[16px] md:w-[18px] opacity-75 mr-0.5'/>
                                         <select
                                             { ...form.register('cateId', { required: true }) }
-                                            className='w-[130px] text-[13px] text-gray-500 bg-transparent'
+                                            className='w-[105px] md:w-[130px] text-[13px] text-gray-500 bg-transparent'
                                         >
                                             <option value={ 0 }>
                                                 전체메모
@@ -303,16 +317,33 @@ export const AddMemo = () => {
                                         >
                                             AI에게 질문하기
                                         </button>
+                                        <button
+                                            type='button'
+                                            className={`block md:hidden text-[12px] rounded-[8px] font-normal text-white border-2 border-gpt/80 bg-gpt py-[3px] md:py-[4px] px-[7px] md:px-[8px] whitespace-nowrap ml-[10px] md:ml-[20px]
+                                            ${ formMode === 'askAI' ? 'bg-gpt/40' : 'bg-gpt' }`}
+                                            onClick={ () => setFormMode(formMode === 'askAI' ? 'edit' : 'askAI') }
+                                        >
+                                            GPT
+                                        </button>
                                     </>
 
                                 </div>
-                                <button
-                                    type='button'
-                                    onClick={ cancelAddMemo }
-                                    className='text-black/50 font-normal'
-                                >
-                                    닫기
-                                </button>
+                                <div className='flex'>
+                                    <button
+                                        type='button'
+                                        onClick={ cancelAddMemo }
+                                        className='text-black/70 font-normal px-[5px] md:px-[10px] py-[2px] md:py-[4px] max-md:text-[12px] whitespace-nowrap'
+                                    >
+                                        닫기
+                                    </button>
+                                    <button
+                                        type='button'
+                                        onClick={ addMemo }
+                                        className='block md:hidden text-black/80 font-normal px-[5px] md:px-[10px] py-[2px] md:py-[4px] ml-[14px] text-[12px] whitespace-nowrap'
+                                    >
+                                        저장
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}

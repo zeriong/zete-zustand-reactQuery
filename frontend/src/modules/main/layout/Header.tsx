@@ -9,7 +9,7 @@ export const Header = () => {
     const layoutStore = useLayoutStore();
 
     return (
-        <header className='flex fixed h-[46px] items-center justify-between w-full z-30 transition-all ease-in-out duration-300 bg-white border-b border-gray-300/80 py-[10px] px-[16px] side-menu-md:px-[10px]'>
+        <header className='flex fixed top-0 h-[46px] items-center justify-between w-full z-30 transition-all ease-in-out duration-300 bg-white border-b border-gray-300/80 py-[10px] px-[16px] side-menu-md:px-[10px]'>
             <div className='flex items-center'>
                 <button
                     type='button'

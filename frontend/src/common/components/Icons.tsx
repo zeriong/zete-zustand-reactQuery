@@ -143,3 +143,8 @@ export const LogoutIcon = (props: SVGProps<SVGSVGElement>) => (
         <path fill='none' stroke='#231F20' strokeWidth='2' d='M13,9 L13,2 L1,2 L1,22 L13,22 L13,15 M22,12 L5,12 M17,7 L22,12 L17,17'/>
     </svg>
 )
+export const TopScrollIcon = (props: SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" height="26" viewBox="0 -960 960 960" width="26" fill='#fff' {...props}>
+        <path d="M320-120v-320H120l360-440 360 440H640v320H320Z"/>
+    </svg>
+)

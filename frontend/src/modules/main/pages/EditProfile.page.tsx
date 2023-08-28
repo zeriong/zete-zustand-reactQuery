@@ -68,7 +68,7 @@ export const EditProfilePage = () => {
     }, []);
 
     return  !getProfileQuery.isLoading &&
-        <div className='w-full min-h-[640px] md:min-h-[700px] h-full relative flex justify-center items-center overflow-hidden'>
+        <div className='w-full min-h-[640px] md:min-h-[700px] h-[calc(100%-46px)] relative flex justify-center items-center overflow-hidden'>
             <form
                 onSubmit={ updateProfileSubmit }
                 className={`flex flex-col justify-center relative bg-white text-start items-center shadow-2xl transition-all ease-in-out duration-500

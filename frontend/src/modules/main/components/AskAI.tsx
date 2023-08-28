@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {MutableRefObject, useEffect, useRef, useState} from 'react';
 import {UseFormReturn} from 'react-hook-form';
 import {apiBundle} from '../../../openapi/api';
 import CustomScroller from '../../../common/components/customScroller';
@@ -6,6 +6,7 @@ import axios, {CancelToken, CancelTokenSource} from 'axios';
 import {AutoResizeTextarea} from '../../../common/components/AutoResizeTextarea';
 import {useToastsStore} from '../../../common/components/Toasts';
 import {useMutation} from '@tanstack/react-query';
+import {useOutletContext} from 'react-router-dom';
 
 export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) => {
     const axiosTokenRef = useRef<CancelTokenSource>(null);
@@ -15,6 +16,9 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
     const [isWaiting, setIsWaiting] = useState(false);
     const [message, setMessage] = useState('');
     const [inputValue, setInputValue] = useState('');
+
+    // 레이아웃에 적용된 커스텀 스크롤러
+    const layoutCustomScroller = useOutletContext<React.MutableRefObject<CustomScroller>>();
 
     const toastsStore = useToastsStore();
 
@@ -177,22 +181,21 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
                     className={`relative shrink flex items-center justify-between p-[5px_0px_5px_12px] shadow-1xl rounded-[12px] mt-[10px]
                     border border-gray-300 shadow-2xl ${ isLoading ? 'bg-gray-200' : 'bg-white' }`}
                 >
-                    <div className='flex items-center w-full'>
-                        <CustomScroller autoHeight={ true } autoHeightMax={ 88 } customTrackVerticalStyle={{ width: 6 }}>
-                            <AutoResizeTextarea
-                                value={ inputValue }
-                                maxLength={ 500 }
-                                rows={ 1 }
-                                disabled={ isLoading }
-                                placeholder='GPT에게 물어보세요! ( Shift + Enter 줄바꿈 )'
-                                className='flex resize-none bg-transparent placeholder:text-gray-500 font-light placeholder:text-[14px] w-full h-fit'
-                                onChange={(event) =>  setInputValue(event.target.value)}
-                                onKeyDown={(event) => {
-                                    // shift + Enter = 줄바꿈, Enter = submit
-                                    if (event.key === 'Enter' && !event.shiftKey) askAiSubmit(event);
-                                }}
-                            />
-                        </CustomScroller>
+                    <div className='flex items-center w-full overflow-auto'>
+                        <AutoResizeTextarea
+                            value={ inputValue }
+                            maxLength={ 500 }
+                            rows={ 1 }
+                            disabled={ isLoading }
+                            placeholder='GPT에게 물어보세요! ( Shift + Enter 줄바꿈 )'
+                            className='flex resize-none bg-transparent placeholder:text-gray-500 font-light text-[12px] md:text-[14px] w-full h-fit max-h-[40px] memo-custom-scroll'
+                            onChange={(event) =>  setInputValue(event.target.value)}
+                            onBlur={ () => layoutCustomScroller.current.scrollTop() }
+                            onKeyDown={(event) => {
+                                // shift + Enter = 줄바꿈, Enter = submit
+                                if (event.key === 'Enter' && !event.shiftKey) askAiSubmit(event);
+                            }}
+                        />
                     </div>
                     <button
                         type='submit'

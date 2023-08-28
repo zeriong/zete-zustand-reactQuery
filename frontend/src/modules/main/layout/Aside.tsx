@@ -26,7 +26,7 @@ export const Aside = () => {
                 ${ layoutStore.isShowSideNav ? 'opacity-50 visible' : 'opacity-0 invisible' }`}
             />
             <aside
-                className={`fixed w-[256px] bg-white z-50 md:z-20 ease-in-out duration-300 pt-0 md:pt-[46px] h-full
+                className={`fixed w-[256px] bg-white z-50 md:z-20 ease-in-out duration-300 h-full top-0 md:top-[46px]
                 overflow-hidden border-r border-gray-300/80
                 ${ layoutStore.isShowSideNav ? 'left-0' : '-left-[256px]' }`}
             >
