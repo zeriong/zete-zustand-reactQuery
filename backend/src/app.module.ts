@@ -10,6 +10,7 @@ import { Tag } from './entities/tag.entity';
 import { Memo } from './entities/memo.entity';
 import { UserModule } from './modules/user/user.module';
 import { MemoModule } from './modules/memo/memo.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -30,8 +31,6 @@ import { MemoModule } from './modules/memo/memo.module';
         JWT_ACCESS_TOKEN_EXPIRATION: Joi.string().required(),
         JWT_REFRESH_TOKEN_PRIVATE_KEY: Joi.string().required(),
         JWT_REFRESH_TOKEN_EXPIRATION: Joi.string().required(),
-        AWS_KEY: Joi.string(),
-        AWS_SECRET: Joi.string(),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -46,12 +45,12 @@ import { MemoModule } from './modules/memo/memo.module';
       logging: false,
       entities: [User, Category, Memo, Tag],
     }),
-    /*
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'client'),
+      // rootPath경로에 존재하는 파일을 요청에 따라 보내주는 파일서버 역할을 한다.
+      // 브라우저에서 특정 경로에 접근할 때 존재하지 않는 경우 index를 보여준다.
+      rootPath: `${__dirname}/../client`,
       exclude: ['/api*'],
     }),
-    */
     UserModule,
     AuthModule,
     MemoModule,

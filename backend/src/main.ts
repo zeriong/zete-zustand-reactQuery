@@ -3,11 +3,21 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as fs from 'fs';
 
 function bootstrap() {
   (async () => {
     try {
-      const app = await NestFactory.create(AppModule);
+      let httpsOptions = null;
+      if (process.env.NODE_ENV === 'production') {
+        httpsOptions = {
+          key: fs.readFileSync('/etc/letsencrypt/live/zeriong.com/privkey.pem'),
+          cert: fs.readFileSync('/etc/letsencrypt/live/zeriong.com/cert.pem'),
+          ca: fs.readFileSync('/etc/letsencrypt/live/zeriong.com/chain.pem'),
+        };
+      }
+
+      const app = await NestFactory.create(AppModule, { httpsOptions });
 
       app.enableCors({
         origin: 'http://localhost:3000',
