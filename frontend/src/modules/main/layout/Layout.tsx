@@ -48,10 +48,10 @@ export const MemoLayout = () => {
             <Aside/>
             <main
                 className={`${ layoutStore.isShowSideNav ? 'pl-0 md:ml-[256px]' : 'ml-0' }
-                flex relative flex-col justify-center h-full max-h-[calc(100% - 46px)] text-center items-center mt-[46px] duration-300 ease-in-out`}
+                flex relative flex-col justify-center h-full max-h-[calc(100% - 46px)] text-center items-center  duration-300 ease-in-out`}
             >
-                <div className='w-full h-full flex relative mt-[46px]'>
-                    <header className='flex fixed top-[46px] h-[46px] items-center justify-between w-full ease-in-out duration-300 bg-white border-b border-gray-300/80 pl-[16px] md:pl-[20px]'>
+                <div className='w-full h-full relative mt-[46px]'>
+                    <header className='flex top-[46px] h-[46px] items-center justify-between w-full ease-in-out duration-300 bg-white border-b border-gray-300/80 pl-[16px] md:pl-[20px]'>
                         <div className={`flex items-center  ${ categoryName === '카테고리가 존재하지않습니다.' && 'text-gray-400' }`}>
                             <div className='w-[16px] md:w-[20px] mr-[10px]'>
                                 <CategoryIcon className=''/>

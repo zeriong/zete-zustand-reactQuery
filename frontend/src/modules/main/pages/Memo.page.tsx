@@ -73,7 +73,7 @@ export const MemoPage = () => {
 
             if (loaderRef.current) observerRef.current.observe(loaderRef.current);
         }
-        return () => observerRef && observerRef.current.disconnect();
+        return () => observerRef.current && observerRef.current.disconnect();
 
     }, [memoStore.list]);
 

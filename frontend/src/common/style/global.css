@@ -11,13 +11,11 @@ html {
 }
 
 body {
-    /*@apply text-*/
     font-family: 'Noto Sans KR',sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     width: 100%;
     height: 100%;
-    position: relative;
 }
 
 code {

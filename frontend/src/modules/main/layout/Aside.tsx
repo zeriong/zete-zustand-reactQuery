@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import CustomScroller from '../../../common/components/customScroller';
 import {EditCategoryModal} from '../components/modals/EditCategory.modal';
 import {Link, To, useSearchParams} from 'react-router-dom';
@@ -14,9 +14,16 @@ export const Aside = () => {
             data.list.sort((a, b) => a.name > b.name ? 1 : -1);
             return data;
         },
+        enabled: false,
     });
 
     const layoutStore = useLayoutStore();
+
+    useEffect(() => {
+        if (!getCategoriesQuery.data?.list) {
+            getCategoriesQuery.refetch();
+        }
+    }, [getCategoriesQuery.data?.list])
 
     return (
         <>

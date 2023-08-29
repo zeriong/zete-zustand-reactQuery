@@ -345,7 +345,7 @@ export class MemoService {
       if (result.affected > 0) {
         const totalImportantCount = await this.memoRepository
           .createQueryBuilder()
-          .where('isImportant = :isImportant', { isImportant: true })
+          .where('isImportant = :isImportant AND userId = :userId', { isImportant: true, userId: user.id })
           .getCount();
 
         return { success: true, totalImportantCount };
