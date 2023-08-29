@@ -159,6 +159,12 @@ export const AddMemo = (props: { memoSection: MutableRefObject<HTMLElement> }) =
         if (props.memoSection.current && (formMode === 'askAI' || formMode === 'edit')) {
             mobileEditBackground.current.style.height = `${props.memoSection.current.scrollHeight}px`;
         }
+        // 카테고리 -> tag 에서 메모 작성시 기본값지정
+        if (searchParams.get('tag')) {
+            form.setValue('tags', [ { name: searchParams.get('tag') } ]);
+        } else {
+            form.setValue('tags', []);
+        }
     }, [formMode]);
 
     // 모바일환경에서 idle일때 저장 가능하도록 스타일 지정
@@ -171,6 +177,10 @@ export const AddMemo = (props: { memoSection: MutableRefObject<HTMLElement> }) =
     useEffect(() => {
         // url 변경시 변경된 카테고리 아이디 지정
         form.setValue('cateId', getCategoryId(searchParams));
+        // 카테고리 -> tag 에서 메모 작성시 기본값지정
+        if (searchParams.get('tag')) {
+            form.setValue('tags', [ { name: searchParams.get('tag') } ]);
+        }
         setFormMode('idle');
     }, [searchParams]);
 

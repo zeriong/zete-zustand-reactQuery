@@ -81,7 +81,8 @@ export const EditMemoModal = () => {
         }
 
         if (data?.title === targetMemo.title && data?.content === targetMemo.content && data?.cateId === Number(targetMemo.cateId) &&
-            targetMemo.tags?.length === diffTagLength && targetMemo.isImportant === data?.isImportant) return;
+            targetMemo.tags?.length === diffTagLength && targetMemo.isImportant === data?.isImportant && targetMemo.tags.length === data.tags.length
+        ) return;
 
         // 변경사항이 존재하고 폼에 내용이 존재한다면 수정된 내용을 저장할 수 있도록 요청
         await updateMemoMutation.mutateAsync({ ...data, id: savedMemoRef.current.id }, {

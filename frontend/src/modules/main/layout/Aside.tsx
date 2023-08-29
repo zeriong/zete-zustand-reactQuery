@@ -51,7 +51,7 @@ export const Aside = () => {
                                     count={ getCategoriesQuery.data?.importantMemoCount }
                                 />
                             </ul>
-                            <p className='text-dark/90 text-[11px] font-light pb-[14px] pt-[17px] pl-[12px]'>
+                            <p className='text-dark/90 text-[14px] font-light pb-[14px] pt-[17px] pl-[12px]'>
                                 카테고리
                             </p>
                             <ul className='grid gap-[4px]'>
@@ -91,7 +91,8 @@ const CateItemList = (props: { to: To, iconComponent: any, iconClassName: string
         <li className={`font-bold group rounded-[5px] hover:bg-gray-200/60 ${ isActiveCate && 'bg-gray-200/60' }`}>
             <Link
                 to={ props.to }
-                className='flex w-full justify-between items-center p-[10px] hover:bg-gray-200/60 rounded-[5px]'
+                className={`flex w-full justify-between items-center p-[10px] hover:bg-gray-200/60 rounded-[5px]
+                ${isActiveCate && 'bg-gray-200/60'}`}
             >
                 <div
                     className={`flex justify-start w-full font-light transition-all duration-150
@@ -100,7 +101,7 @@ const CateItemList = (props: { to: To, iconComponent: any, iconClassName: string
                     <props.iconComponent className={ props.iconClassName }/>
                     <p>{ props.cateName }</p>
                 </div>
-                <div className={`rounded-full text-dark/80 py-[2px] px-[8px] text-[12px] font-medium ${ isActiveCate ? 'bg-white' : 'group-hover:bg-white bg-gray-200/60' }`}>
+                <div className={`rounded-full text-dark/80 py-[2px] px-[8px] text-[12px] font-medium ${ isActiveCate ? 'bg-white' : 'group-hover:bg-white bg-gray-200/70' }`}>
                     <p className='relative bottom-[1px]'>
                         { props.count || 0 }
                     </p>
@@ -114,8 +115,8 @@ const CateItemList = (props: { to: To, iconComponent: any, iconClassName: string
                     >
                         <Link
                             to={{ pathname: '/memo', search: `${ props.to.search }&tag=${ tag.name }` }}
-                            className={`flex w-full h-fit py-[8px] pl-[16px] rounded-[5px] mb-[1px] hover:bg-gray-300
-                            ${ searchParams.get('tag') === tag.name && 'bg-gray-300' }`}
+                            className={`flex w-full h-fit py-[8px] pl-[16px] rounded-[5px] hover:bg-gray-300/70
+                            ${ searchParams.get('tag') === tag.name && 'bg-gray-300/70' }`}
                         >
                             <TagIcon svgClassName='w-[14px] mr-[8px]' strokeClassName='fill-dark/90'/>
                             <p>{ tag.name }</p>

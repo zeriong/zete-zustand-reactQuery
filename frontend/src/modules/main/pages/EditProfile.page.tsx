@@ -45,6 +45,17 @@ export const EditProfilePage = () => {
         const { email, password, name, mobile } = form.getValues();
         const data = getProfileQuery.data;
 
+        // 데모 사용자의 경우 회원정보수정 불가능
+        if (data.email === 'demo@demo.com') {
+            if (!password && email === data.email && name === data.name && mobile && data.mobile) {
+                navigate(-1);
+            } else {
+                setOccurError('데모 계정은 수정불가');
+                toastsStore.addToast('❌ 데모 계정은 수정이 불가능합니다.');
+            }
+            return;
+        }
+
         // 프로필에 변경사항이 없다면 요청하지 않고 이전 페이지로 이동 (일반적으로 이전페이지는 프로필페이지)
         if (data.name === name && data.email === email && data.mobile === mobile && password.length === 0) return navigate(-1);
 
