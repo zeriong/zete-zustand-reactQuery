@@ -121,7 +121,7 @@ export const AddMemo = (props: { memoSection: MutableRefObject<HTMLElement> }) =
 
     // 폼 입력 감지
     useEffect(() => {
-        const subscription = form.watch((data, { name, type }) => {
+        const subscription = form.watch((data, { name }) => {
             // 특정 항목이 입력될 경우
             if (name) tryAddMemo();
         });
@@ -348,7 +348,7 @@ export const AddMemo = (props: { memoSection: MutableRefObject<HTMLElement> }) =
                                     </button>
                                     <button
                                         type='button'
-                                        onClick={ addMemo }
+                                        onClick={ () => setFormMode('idle') }
                                         className='block md:hidden text-black/80 font-normal px-[5px] md:px-[10px] py-[2px] md:py-[4px] ml-[14px] text-[12px] whitespace-nowrap'
                                     >
                                         저장
