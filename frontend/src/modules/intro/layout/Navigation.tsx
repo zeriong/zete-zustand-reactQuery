@@ -1,6 +1,6 @@
 import {Link, useSearchParams} from 'react-router-dom';
 import React from 'react';
-import {HamburgerMenuIcon, LogoutIcon, ModifyIcon} from '../../../common/components/Icons';
+import {BrandMark, HamburgerMenuIcon, LogoutIcon, ModifyIcon} from '../../../common/components/Icons';
 import {useLayoutStore} from '../../../store/layoutStore';
 import {useAuthStore} from '../../../store/authStore';
 import {useQuery} from '@tanstack/react-query';
@@ -36,15 +36,19 @@ export const HomeNav = ()=> {
     }
 
     return (
-        <nav className='flex justify-between h-[48px] md:h-auto pl-[12px] pr-[12px] items-center md:px-[40px] py-[12px] border-b border-gray-300 whitespace-nowrap fixed bg-white w-full z-30'>
+        <nav className='flex justify-between h-[48px] md:h-auto pl-[12px] pr-[12px] items-center md:px-[20px] py-[12px] border-b border-gray-300 whitespace-nowrap fixed bg-white w-full z-30'>
             <div
                 onClick={ () => layoutStore.setShowSideNav(false) }
                 className={`transition-all ease-in-out fixed w-full h-full bg-black opacity-0 left-0 top-0 duration-300 z-30
                 ${ layoutStore.isShowSideNav ? 'opacity-50 visible' : 'opacity-0 invisible' }`}
             />
-            <Link to='/' className='font-bold text-[18px] md:text-[20px] mr-[48px]'>
-                Zete
-            </Link>
+            <div className='flex items-center mr-[48px]'>
+                <BrandMark className='rounded mr-[8px]'/>
+                <Link to='/' className='font-bold text-[18px] md:text-[20px]'>
+                    ZETE
+                </Link>
+            </div>
+
 
             {/** 모바일 환경 컴포넌트 */}
             <section
@@ -60,7 +64,7 @@ export const HomeNav = ()=> {
                             <div className='group flex items-center'>
                                 <ModifyIcon width={22} height={22} className='ease-in-out duration-200 rotate-0 group-hover:rotate-[360deg]'/>
                                 <Link to='memo' className='flex w-full py-[4px] pl-[8px] text-gray-600 hover:text-deepPrimary ease-in-out duration-150'>
-                                    Let's Zete!
+                                    Let's ZETE!
                                 </Link>
                             </div>
                             <div className='group flex items-center'>
@@ -121,7 +125,7 @@ export const HomeNav = ()=> {
                         to='memo'
                         className='flex justify-center cursor-pointer rounded-[8px] py-[4px] px-[20px] bg-deepPrimary text-white mr-[12px]'
                     >
-                        Let's Zete!
+                        Let's ZETE!
                     </Link>
                     <button
                         type='button'

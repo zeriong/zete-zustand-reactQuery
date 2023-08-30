@@ -28,10 +28,10 @@ export const Home = () => {
                 <div className='flex flex-col items-center w-[450px]'>
                     <h1 className='mt-[40px] text-[36px] md:text-[48px] text-gray-800 flex flex-col w-[376px]'>
                         깔끔한 기록을 위한
-                        <span className='mt-[12px]'>
+                        <span className='mt-[12px] whitespace-nowrap'>
                             메모 서비스
                             <span className='ml-[16px] font-extrabold'>
-                                Zete!
+                                ZETE!
                             </span>
                         </span>
                     </h1>
@@ -45,7 +45,7 @@ export const Home = () => {
                                 className='text-[30px] font-bold flex py-[8px] px-[20px] items-center bg-deepPrimary
                                 rounded-[16px] justify-center mt-[32px] cursor-pointer text-white'
                             >
-                                Let's Zete!
+                                Let's ZETE!
                             </Link>
                         </div>
                     ) : (

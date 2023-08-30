@@ -2,7 +2,7 @@ import React from 'react';
 import {UserProfileMenuPopover} from '../components/popovers/UserProfileMenu.popover';
 import {Link} from 'react-router-dom';
 import {SearchMemo} from '../components/SearchMemo';
-import {HamburgerMenuIcon} from '../../../common/components/Icons';
+import {BrandMark, HamburgerMenuIcon} from '../../../common/components/Icons';
 import {useLayoutStore} from '../../../store/layoutStore';
 
 export const Header = () => {
@@ -18,8 +18,7 @@ export const Header = () => {
                 >
                     <HamburgerMenuIcon height={20}/>
                 </button>
-                {/*브랜드마크*/}
-                <div className='w-[26px] h-[26px] bg-primary rounded mr-[10px]'/>
+                <BrandMark className='rounded mr-[10px]'/>
                 <Link
                     to='/memo'
                     className='flex relative justify-start items-center text-[17px] font-medium transition-all duration-300 h-full'

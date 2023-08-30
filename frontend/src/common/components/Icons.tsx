@@ -148,3 +148,8 @@ export const TopScrollIcon = (props: SVGProps<SVGSVGElement>) => (
         <path d="M320-120v-320H120l360-440 360 440H640v320H320Z"/>
     </svg>
 )
+export const BrandMark = (props: SVGProps<SVGSVGElement>) => (
+    <svg width={26} height={26} {...props}>
+        <rect width={100} height={100} className='fill-primary'/>
+    </svg>
+)
