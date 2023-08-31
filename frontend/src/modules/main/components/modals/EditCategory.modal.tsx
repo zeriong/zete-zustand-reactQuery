@@ -7,6 +7,7 @@ import {GetCategoriesOutput} from '../../../../openapi/generated';
 import {useToastsStore} from '../../../../common/components/Toasts';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {apiBundle} from '../../../../openapi/api';
+import {loadMemos} from '../../../../libs/memo.lib';
 
 export const EditCategoryModal = (props: { buttonText: string }) => {
     const [isShow, setIsShow] = useState(false);
@@ -67,7 +68,10 @@ export const EditCategoryModal = (props: { buttonText: string }) => {
     const deleteCategory = (memoId) => {
         deleteCategoryMutation.mutate({id: memoId}, {
             onSuccess: async (data) => {
-                if (data.success) await getCategoriesQuery.refetch();
+                if (data.success) {
+                    await getCategoriesQuery.refetch();
+                    loadMemos(true);
+                }
                 else console.log(data.error);
             },
         })
