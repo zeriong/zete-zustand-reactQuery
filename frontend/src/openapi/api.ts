@@ -41,17 +41,10 @@ axiosInstance.interceptors.response.use((value: any) => value, async (error) => 
                 return axiosInstance(originalConfig);
             } else {
                 // 로그아웃상태에서 유저데이터가 존재하는 경우 캐싱데이터 모두 삭제
-                if (queryClient.getQueryData(['user/getProfile']) && !authStore.isLoggedIn) {
-                    queryClient.removeQueries();
-                }
                 authStore.setLogout();
                 return Promise.reject(error);
             }
         } catch (e) {
-            // 로그아웃상태에서 유저데이터가 존재하는 경우 캐싱데이터 모두 삭제
-            if (queryClient.getQueryData(['user/getProfile']) && !authStore.isLoggedIn) {
-                queryClient.removeQueries();
-            }
             // 토큰발급 실패, 로그인정보 초기화 및 로그인창 이동
             authStore.setLogout();
             return Promise.reject(e);
