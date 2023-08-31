@@ -63,6 +63,27 @@ export const EditMemoModal = () => {
         })()
     }
 
+    // 모달 세팅 시도
+    const trySetModal = () => {
+        (async () => {
+            // getDelayTimerRef의 타임아웃이 진행중이라면 취소
+            if (getDelayTimerRef.current != null) {
+                clearTimeout(getDelayTimerRef.current);
+                getDelayTimerRef.current = null;
+            }
+            if (getDelayTimerRef.current == null) {
+                // 데이터로드중이라면 연기 (메모수정이 완료 되지 않아도 세팅 연기)
+                if (isLoadingMemoRef.current) {
+                    getDelayTimerRef.current = setTimeout(() => {
+                        trySetModal();
+                    }, 500);
+                } else { // 모달 세팅
+                    await setModal();
+                }
+            }
+        })()
+    }
+
     // 메모 수정 (auto 인자는 해당 함수를 자동저장인지 직접저장인지를 식별하는 용도)
     const editMemo = async (auto?) => {
         clearTimeout(saveDelayTimerRef.current);
@@ -88,6 +109,9 @@ export const EditMemoModal = () => {
         await updateMemoMutation.mutateAsync({ ...data, id: savedMemoRef.current.id }, {
             onSuccess: (data) => {
                 const responseMemo = data.savedMemo;
+
+                if (auto) return
+
                 const savedMemo = savedMemoRef.current;
                 const cate = searchParams.get('cate');
 
@@ -104,29 +128,8 @@ export const EditMemoModal = () => {
         })
 
         // 카테고리리스트 최신화, 저장중 상태 false로 변경하여 접근 가능하도록 설정
-        getCategoriesQuery.refetch();
+        if (!auto) getCategoriesQuery.refetch();
         isSavingMemoRef.current = false;
-    }
-
-    // 모달 세팅 시도
-    const trySetModal = () => {
-        (async () => {
-            // getDelayTimerRef의 타임아웃이 진행중이라면 취소
-            if (getDelayTimerRef.current != null) {
-                clearTimeout(getDelayTimerRef.current);
-                getDelayTimerRef.current = null;
-            }
-            if (getDelayTimerRef.current == null) {
-                // 데이터로드중이라면 연기 (메모수정이 완료 되지 않아도 세팅 연기)
-                if (isLoadingMemoRef.current) {
-                    getDelayTimerRef.current = setTimeout(() => {
-                        trySetModal();
-                    }, 500);
-                } else { // 모달 세팅
-                    await setModal();
-                }
-            }
-        })()
     }
 
     // 메모 수정 시도
