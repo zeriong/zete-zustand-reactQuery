@@ -13,19 +13,18 @@ export const HomeLayout = () => {
 
     const windowResize = useWindowResize();
 
-    const layoutStore = useLayoutStore()
+    const layoutStore = useLayoutStore();
 
     // 브라우저사이즈 변화에 따른 사이드 네비게이션 활성화
     useEffect(() => {
         if (windowResize.width > 767) {
             if (layoutStore.isShowSideNav) layoutStore.setShowSideNav(false);
-
         }
     },[windowResize]);
 
     useEffect(() => {
         layoutStore.setShowSideNav(false);
-    },[])
+    },[]);
 
     return (
         <>

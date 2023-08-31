@@ -70,7 +70,6 @@ export const getQueryParams = () => {
 /** 로그아웃 함수 */
 export const logout = () => {
     const authStore = useAuthStore.getState();
-    const memoStore = useMemoStore.getState();
     (async () => {
         await apiBundle.auth.logout()
             .then((res) => {
@@ -78,7 +77,6 @@ export const logout = () => {
             })
             .catch((e) => console.log(e));
         authStore.setLogout();
-        queryClient.removeQueries(['user/getProfile']);
-        memoStore.resetMemos();
+        queryClient.removeQueries();
     })()
 }

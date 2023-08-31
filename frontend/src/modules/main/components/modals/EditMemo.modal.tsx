@@ -87,7 +87,14 @@ export const EditMemoModal = () => {
         // 변경사항이 존재하고 폼에 내용이 존재한다면 수정된 내용을 저장할 수 있도록 요청
         await updateMemoMutation.mutateAsync({ ...data, id: savedMemoRef.current.id }, {
             onSuccess: (data) => {
-                if (data.success) savedMemoRef.current = data.savedMemo;
+                const responseMemo = data.savedMemo;
+                const savedMemo = savedMemoRef.current;
+                const cate = searchParams.get('cate');
+
+                if (cate && ((responseMemo.cateId !== Number(savedMemo.cateId)) || (cate === 'important' && responseMemo.isImportant === false))) {
+                    memoStore.deleteMemo(responseMemo.id);
+                }
+                if (data.success) savedMemoRef.current = responseMemo;
                 else toastsStore.addToast(data.error);
             },
             onError: () => {

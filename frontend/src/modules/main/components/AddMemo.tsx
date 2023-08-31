@@ -143,7 +143,7 @@ export const AddMemo = (props: { memoSection: MutableRefObject<HTMLElement> }) =
                     await addMemo();
 
                     // 생성한 메모 카테고리가 현재 카테고리와 같거나 전체메모인 경우만 메모 렌더링
-                    if (Number(searchParams.get('cate')) === data.cateId || !searchParams.get('cate')) {
+                    if (Number(searchParams.get('cate')) === Number(data.cateId) || !searchParams.get('cate')) {
                         memoStore.addMemo(savedMemoRef.current);
                     }
                     // 카테고리 최신화, 임시저장된 메모 삭제

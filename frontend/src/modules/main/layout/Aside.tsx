@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo} from 'react';
 import CustomScroller from '../../../common/components/customScroller';
 import {EditCategoryModal} from '../components/modals/EditCategory.modal';
-import {Link, To, useSearchParams} from 'react-router-dom';
+import {Link, To, useLocation, useSearchParams} from 'react-router-dom';
 import {AllIcon, CategoryIcon, StarIcon, TagIcon} from '../../../common/components/Icons';
 import {Tag} from '../../../openapi/generated';
 import {useLayoutStore} from '../../../store/layoutStore';
@@ -87,12 +87,16 @@ export const Aside = () => {
 const CateItemList = (props: { to: To, iconComponent: any, iconClassName: string, cateName: string, cateId: string, count: number, tags?: Tag[] }) => {
     const [searchParams] = useSearchParams();
 
+    const location = useLocation();
+
     const isActiveCate = useMemo(() => {
+        if (location.pathname.includes('profile')) return false
+
         const cate = searchParams.get('cate');
         if (props.cateName === '전체메모') return !cate;
         if (props.cateName === '중요메모') return cate === 'important';
         if (props.cateId) return cate === String(props.cateId);
-    },[searchParams]);
+    },[searchParams, location.pathname]);
 
     return (
         <li className={`font-bold group rounded-[5px] hover:bg-gray-200/60 ${ isActiveCate && 'bg-gray-200/60' }`}>

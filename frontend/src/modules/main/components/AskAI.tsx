@@ -94,7 +94,7 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
     return (
         <section
             className={`flex flex-col transition-all duration-300 w-full bg-gpt/50 h-0 rounded-b-[8px] overflow-hidden z-50 shadow-2xl
-            ${ props.isShow && ' h-[400px] p-[10px]' }`}
+            ${ props.isShow && 'h-auto xs:h-[400px] p-[10px]' }`}
         >
             <div className='flex flex-col w-full h-full'>
                 <div className='relative flex flex-col grow text-start text-dark bg-white/80 rounded-[8px] p-[8px]'>
@@ -189,7 +189,7 @@ export const AskAI = (props: { isShow: boolean, memoForm: UseFormReturn<any> }) 
                             rows={ 1 }
                             disabled={ isLoading }
                             placeholder='GPT에게 물어보세요! ( Shift + Enter 줄바꿈 )'
-                            className='flex resize-none bg-transparent placeholder:text-gray-500 font-light text-[12px] md:text-[14px] w-full h-fit max-h-[40px] memo-custom-scroll'
+                            className='flex resize-none bg-transparent placeholder:text-gray-500 font-light text-[10px] xs:text-[12px] md:text-[14px] w-full h-fit max-h-[40px] memo-custom-scroll'
                             onChange={(event) =>  setInputValue(event.target.value)}
                             onBlur={ () => layoutCustomScroller.current.scrollTop() }
                             onKeyDown={(event) => {
