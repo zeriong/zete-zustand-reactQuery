@@ -1,13 +1,19 @@
-# Zete 메모 서비스
+<br/><br/>
+<div>
+   <h1>ZETE 메모 서비스</h1>
+   <img src="https://github.com/zeriong/zete-zustand-reactQuery/assets/115396103/995d574d-4d33-45a5-938a-8f7be170a3c0" width="1000" style="border-bottom"/>
+   <h1/>
+</div>
+
+<br/>
+
 ### 데모 계정으로 이용하기 👉  &nbsp;&nbsp;[[ Zete 바로가기 ]](https://zete.zeriong.com/?type=demo)
 
 > 데모 계정은 로그인을 누르면 아이디와 비밀번호가 지정되어있습니다.
 
 <br/>
 
-
-
-### 📚 사용된 기술
+### 사용된 기술
 
 - #### Frontend
    ![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=000)
@@ -34,3 +40,6 @@
    ![linux](https://img.shields.io/badge/-linux-FCC624?style=for-the-badge&logo=linux&logoColor=000)
 ![pm2](https://img.shields.io/badge/-pm2-2B037A?style=for-the-badge&logo=pm2&logoColor=fff)
 
+<br/>
+
+# 프로젝트 소개
