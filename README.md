@@ -1,19 +1,30 @@
-<br/><br/>
-<div>
-   <h1>ZETE 메모 서비스</h1>
-   <img src="https://github.com/zeriong/zete-zustand-reactQuery/assets/115396103/995d574d-4d33-45a5-938a-8f7be170a3c0" width="1000" style="border-bottom"/>
-   <h1/>
+<div align="center">
+   <table>
+      <td>
+         <img src="https://github.com/zeriong/zete-zustand-reactQuery/assets/115396103/995d574d-4d33-45a5-938a-8f7be170a3c0" width="1000" style="border-bottom"/>
+      </td>
+   </table>
+   <br/>
+   <h2>메모작성에 집중할 수 있는 편리한 메모 서비스 📒</h2>
+   <p>중요한 내용을 작성하다 컴퓨터가 멈추거나 종료되었을때</p>
+   <p>저장버튼을 누르지않아 절망하신 경험이 있으신가요?</p>
+   <p>ZETE는 단순하게</p>
+   <h4>"저장버튼 누르지 않아도 저장 됐으면..."</h4>
+   <p>하는 아이디어에서 시작됐습니다.</p>
+   <p>편하게 메모를 이용해주시면 ZETE가 알아서 처리해줄거에요!</p>
+   <br/>
+   <h3>
+      데모계정으로 이용 해보기 👉
+      <a href="https://zete.zeriong.com/?type=demo">
+         [ ZETE 바로가기 ]
+      </a>
+      <h6>📌 데모 계정은 로그인시 아이디와 비밀번호가 지정되어있습니다.</h6>
+   </h3>
+   <h1></h1>
+   <br/>
 </div>
 
-<br/>
-
-### 데모 계정으로 이용하기 👉  &nbsp;&nbsp;[[ Zete 바로가기 ]](https://zete.zeriong.com/?type=demo)
-
-> 데모 계정은 로그인을 누르면 아이디와 비밀번호가 지정되어있습니다.
-
-<br/>
-
-### 사용된 기술
+### 📚 사용된 기술
 
 - #### Frontend
    ![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=000)
@@ -42,4 +53,11 @@
 
 <br/>
 
-# 프로젝트 소개
+## ⚙ 주요기능 & 기능 구현 설계
+
+- ### 메모 추가와 GPT에게 질문하기
+  <img width="70%" src="https://github.com/zeriong/zete-zustand-reactQuery/assets/115396103/8b8f91a7-f917-4c70-bb50-1a66e080fd1b"/>
+
+- ### 카테고리 추가와 메모의 카테고리변경 
+  <img width="70%" src="https://github.com/zeriong/zete-zustand-reactQuery/assets/115396103/b37d4a2a-2875-4b25-95ca-3439ae585fcd"/>
+
