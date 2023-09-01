@@ -1,30 +1,46 @@
 <div align="center">
    <table>
       <td>
-         <img src="https://github.com/zeriong/zete-zustand-reactQuery/assets/115396103/995d574d-4d33-45a5-938a-8f7be170a3c0" width="1000" style="border-bottom"/>
+         <img src="https://github.com/zeriong/zete-zustand-reactQuery/assets/115396103/36e766e8-5901-4291-9aca-06427809e419" width="1000" style="border-bottom"/>
       </td>
    </table>
+   
    <br/>
    <h2>메모작성에 집중할 수 있는 편리한 메모 서비스 📒</h2>
-   <p>중요한 내용을 작성하다 컴퓨터가 멈추거나 종료되었을때</p>
-   <p>저장버튼을 누르지않아 절망하신 경험이 있으신가요?</p>
-   <p>ZETE는 단순하게</p>
-   <h4>"저장버튼 누르지 않아도 저장 됐으면..."</h4>
-   <p>하는 아이디어에서 시작됐습니다.</p>
-   <p>편하게 메모를 이용해주시면 ZETE가 알아서 처리해줄거에요!</p>
+   <p>ZETE는 Chat GPT에게 질문하고 답변을 메모에 반영시킬 수 있는 기능이 있어요.</p>
+   <p>메모를 저장할 때 메모 작성란을 제외한 아무 곳이나 클릭하거나 닫으면 메모가 저장돼요.</p>
+   
+   <br/><br/>
+   <h4>💾 자동 저장 베이스의 메모</h4>
+   <p>의도치않게 브라우저가 종료되어도 데이터손실이 없거나, 적도록 리스크를 줄였습니다.</p>
    <br/>
-   <h3>
-      데모계정으로 이용 해보기 👉
-      <a href="https://zete.zeriong.com/?type=demo">
-         [ ZETE 바로가기 ]
-      </a>
-      <h6>📌 데모 계정은 로그인시 아이디와 비밀번호가 지정되어있습니다.</h6>
-   </h3>
+   <h4>🧾 카테고리와 태그를 통한 세분화</h4>
+   <p>카테고리 내에서 태그를 추가할 수 있어 메모의 주제를 더 세분화할 수 있습니다.</p>
+   <br/>
+   <h4>🦾 궁금한 내용을 GPT에게 물어보세요</h4>
+   <p>메모 작성란에서 바로 GPT에게 질문할 수 있는 버튼이 있어 빠르게 정보를 얻을 수 있습니다.</p>
+   <br/><br/><br/>
+   
+   <table>
+      <td align="center">
+         <h3>데모계정으로 이용 해보기 👉 <a href="https://zete.zeriong.com/?type=demo"> [ ZETE 바로가기 ] </a></h3>
+         <em>
+            <strong>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+               📌 데모 계정은 로그인시 아이디와 비밀번호가 지정되어있습니다.
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </strong>
+         </em>
+         <br/><br/>
+      </td>
+   </table>
+   
+   <br/>
    <h1></h1>
-   <br/>
 </div>
 
 ### 📚 사용된 기술
+  
 
 - #### Frontend
    ![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=000)
