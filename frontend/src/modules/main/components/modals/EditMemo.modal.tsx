@@ -309,7 +309,15 @@ export const EditMemoModal = () => {
                                                         ))}
                                                     </select>
                                                 </div>
+                                                <button
+                                                    type='button'
+                                                    onClick={ closeModal }
+                                                    className='text-black/80 font-normal px-[5px] md:px-[10px] py-[2px] md:py-[4px] max-xs:text-[12px] whitespace-nowrap'
+                                                >
+                                                    닫기
+                                                </button>
                                             </div>
+
                                         </div>
                                     </div>
                                 </article>
