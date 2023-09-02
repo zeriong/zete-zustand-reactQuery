@@ -13,6 +13,7 @@ import {AutoResizeInput} from '../../../common/components/AutoResizeInput';
 import {useToastsStore} from '../../../common/components/Toasts';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {useMemoStore} from '../../../store/memoStore';
+import {useWindowResize} from '../../../hooks/useWindowResize';
 
 export const AddMemo = (props: { memoSection: MutableRefObject<HTMLElement> }) => {
     const panelRef = useRef<HTMLDivElement>(null);
@@ -22,13 +23,16 @@ export const AddMemo = (props: { memoSection: MutableRefObject<HTMLElement> }) =
     const isCancelMemoRef = useRef(false);
     const mobileEditBackground = useRef<HTMLDivElement>(null);
 
+
     const [searchParams] = useSearchParams();
     const [formMode, setFormMode] = useState<'idle' | 'edit' | 'askAI'>('idle');
+    const [isMobileScreen, setIsMobileScreen] = useState(false);
 
     const getCategoriesQuery = useQuery<GetCategoriesOutput>(['memo/getCategories'], { enabled: false });
     const createMemoMutation = useMutation(apiBundle.memo.createMemo);
     const updateMemoMutation = useMutation(apiBundle.memo.updateMemo);
     const deleteMemoMutation = useMutation(apiBundle.memo.deleteMemo);
+    const windowResize = useWindowResize();
 
     const toastsStore = useToastsStore();
     const memoStore = useMemoStore();
@@ -173,6 +177,15 @@ export const AddMemo = (props: { memoSection: MutableRefObject<HTMLElement> }) =
             mobileEditBackground.current.style.height = `${props.memoSection.current.scrollHeight}px`;
         }
     }, [props.memoSection.current?.scrollHeight]);
+
+    // 모바일환경에서 메모 폼의 [ 닫기 -> 저장 ] 으로 변경
+    useEffect(() => {
+        if (windowResize.width <= 767) {
+            setIsMobileScreen(true)
+        } else if (windowResize.width > 767 && isMobileScreen) {
+            setIsMobileScreen(false);
+        }
+    }, [windowResize])
 
     useEffect(() => {
         // url 변경시 변경된 카테고리 아이디 지정
@@ -344,14 +357,14 @@ export const AddMemo = (props: { memoSection: MutableRefObject<HTMLElement> }) =
                                         onClick={ cancelAddMemo }
                                         className='text-black/70 font-normal px-[5px] md:px-[10px] py-[2px] md:py-[4px] max-md:text-[12px] whitespace-nowrap'
                                     >
-                                        닫기
+                                        취소
                                     </button>
                                     <button
                                         type='button'
                                         onClick={ () => setFormMode('idle') }
-                                        className='block md:hidden text-black/80 font-normal px-[5px] md:px-[10px] py-[2px] md:py-[4px] ml-[14px] text-[12px] whitespace-nowrap'
+                                        className='text-black/80 font-normal px-[5px] md:px-[10px] py-[2px] md:py-[4px] ml-[14px] max-md:text-[12px] whitespace-nowrap'
                                     >
-                                        저장
+                                        { isMobileScreen ? '저장' : '닫기' }
                                     </button>
                                 </div>
                             </div>
