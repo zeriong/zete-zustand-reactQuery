@@ -23,7 +23,13 @@ export const SignInModal = () => {
     const loginMutation = useMutation(apiBundle.auth.login);
     const getProfileQuery = useQuery<User>(['user/getProfile'], { enabled: false });
 
-    const form = useForm<LoginInput>({ mode: 'onChange' });
+    const form = useForm<LoginInput>({
+        mode: 'onChange',
+        // 데모계정을 제공하기 위함
+        defaultValues: {
+            email: searchParams.get('type') === 'demo' ? 'demo@demo.com' : '',
+            password: searchParams.get('type') === 'demo' ? 'demo1234$' : '',
+        }});
 
     const openSignupModal = () => {
         searchParams.set('modal', 'sign-up');
@@ -56,11 +62,6 @@ export const SignInModal = () => {
     useEffect(() => {
         if (searchParams.get('modal') === 'sign-in') return setIsShow(true);
         setIsShow(false);
-        // 데모 계정을 제공하기 위함
-        if (searchParams.get('type') === 'demo') {
-            form.setValue('email', 'demo@demo.com');
-            form.setValue('password', 'demo1234$');
-        }
     },[searchParams]);
 
     return (
