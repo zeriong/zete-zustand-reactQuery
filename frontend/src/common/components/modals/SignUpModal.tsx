@@ -35,7 +35,7 @@ export const SignUpModal = (props: { successControl: React.Dispatch<React.SetSta
 
         createAccountMutation.mutate(input, {
             onSuccess: (data) => {
-                if (!data.success) setErrorMessage(data.error || '잘못된 접근으로 에러가 발생했습니다.');
+                if (!data.success) return setErrorMessage(data.error || '잘못된 접근으로 에러가 발생했습니다.');
                 closeModal();
                 props.successControl(true);
             },
